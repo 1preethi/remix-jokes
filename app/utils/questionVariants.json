@@ -1,0 +1,25 @@
+
+[
+    {
+        "q_id": "q1",
+        "q_text": "What will be the output for the given Python code?",
+        "code": "print({input_a} {input_b} {input_c})",
+        "inputs": [
+            {
+                "input_a": 5,
+                "input_c": 10,
+                "input_b": "+"
+            },
+            {
+                "input_a": 25,
+                "input_c": 15,
+                "input_b": "*"
+            },
+            {
+                "input_a": 10,
+                "input_c": 5,
+                "input_b": "-"
+            }
+        ]
+    }
+]
