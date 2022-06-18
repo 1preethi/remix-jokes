@@ -11,26 +11,27 @@ import {
   useCatch,
 } from "@remix-run/react";
 
-import globalStylesUrl from "./styles/global.css";
-import globalMediumStylesUrl from "./styles/global-medium.css";
-import globalLargeStylesUrl from "./styles/global-large.css";
-import McqPoolBuilder from './components/mcqPoolBuilder'
+// import globalStylesUrl from "./styles/global.css";
+// import globalMediumStylesUrl from "./styles/global-medium.css";
+// import globalLargeStylesUrl from "./styles/global-large.css";
+// import McqPoolBuilder from './components/mcqPoolBuilder'
+// import { Children } from "react";
 
-export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: globalStylesUrl },
-    {
-      rel: "stylesheet",
-      href: globalMediumStylesUrl,
-      media: "print, (min-width: 640px)",
-    },
-    {
-      rel: "stylesheet",
-      href: globalLargeStylesUrl,
-      media: "screen and (min-width: 1024px)",
-    },
-  ];
-};
+// export const links: LinksFunction = () => {
+//   return [
+//     { rel: "stylesheet", href: globalStylesUrl },
+//     {
+//       rel: "stylesheet",
+//       href: globalMediumStylesUrl,
+//       media: "print, (min-width: 640px)",
+//     },
+//     {
+//       rel: "stylesheet",
+//       href: globalLargeStylesUrl,
+//       media: "screen and (min-width: 1024px)",
+//     },
+//   ];
+// };
 
 export const meta: MetaFunction = () => {
   const description = `Learn Remix and laugh at the same time!`;
@@ -62,10 +63,11 @@ function Document({
         {/* <script src="/pyodide_script.js"></script>https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js */}
         <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
         <script src="http://chancejs.com/chance.min.js"></script>
+        <Links />
         <title>{title}</title>
       </head>
       <body>
-        <McqPoolBuilder />
+        {children}
         <Scripts />
         <LiveReload />
       </body>

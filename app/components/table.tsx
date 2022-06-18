@@ -1,5 +1,4 @@
 import { useTable } from "react-table";
-import '../styles/table.css'
 
 export default function Table({ columns, data }) {
     // Use the state and functions returned from useTable to build your UI

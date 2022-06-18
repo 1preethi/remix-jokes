@@ -155,27 +155,39 @@ export default function VariantsGenerator() {
 
         const getPythonOutput = (code) => {
 
-            let pythonCode = `
-            from io import StringIO 
-            import sys
-        
-            class Capturing(list):
-                def __enter__(self):
-                    self._stdout = sys.stdout
-                    sys.stdout = self._stringio = StringIO()
-                    return self
-                def __exit__(self, *args):
-                    self.extend(self._stringio.getvalue().splitlines())
-                    del self._stringio    # free up some memory
-                    sys.stdout = self._stdout
-        
-            with Capturing() as output:
-               ${code}
-        
-            list(output)`
+            code = `a = input()
+print(a)
+`
+
+            let codeWithSlashNIndents = code.replaceAll("\n", "\n        ")
+            let codeWithSlashRIndents = code.replaceAll("\r", "\r        ")
+
+            let pythonCode = `from io import StringIO
+import sys
+from contextlib import _RedirectStream
+class redirect_stdin(_RedirectStream):
+    _stream = "stdin"
+
+with redirect_stdin(StringIO("2")):
+    class Capturing(list):
+        def __enter__(self):
+            self._stdout = sys.stdout
+            sys.stdout = self._stringio = StringIO()
+            return self
+        def __exit__(self, *args):
+            self.extend(self._stringio.getvalue().splitlines())
+            del self._stringio    # free up some memory
+            sys.stdout = self._stdout
+    with Capturing() as output:
+        ${code}
+list(output)`
+
+
+
 
 
             let pythonOutput = pyodide.runPython(pythonCode).toJs({ depth: 1 })
+            console.log(pythonOutput, 'po')
 
             return pythonOutput
         }

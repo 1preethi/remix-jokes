@@ -1,7 +1,6 @@
 {
-  "name": "content-utils",
+  "name": "content-utils-p",
   "version": "0.0.1",
-  "private": true,
   "sideEffects": false,
   "prisma": {
     "seed": "node --require esbuild-register prisma/seed.ts"
@@ -17,6 +16,9 @@
     "@emotion/styled": "11.8.1",
     "@loadable/component": "5.15.2",
     "@monaco-editor/react": "4.4.5",
+    "@mui/icons-material": "5.8.4",
+    "@mui/lab": "5.0.0-alpha.86",
+    "@mui/material": "5.8.4",
     "@prisma/client": "3.14.0",
     "@remix-run/node": "^1.5.1",
     "@remix-run/react": "^1.5.1",
@@ -39,6 +41,7 @@
     "react-select": "5.3.2",
     "react-simple-code-editor": "0.11.2",
     "react-table": "7.8.0",
+    "remix-utils": "3.3.0",
     "selecttransform": "1.6.1",
     "stjs": "0.0.5",
     "stjs_dev": "1.0.0"

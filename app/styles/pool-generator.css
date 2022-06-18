@@ -1,15 +1,35 @@
-.question-data-row {
-  display: flex;
-  justify-content: space-between;
+.app-heading {
+  text-align: center;
+  font-weight: bold;
+  font-size: 30px;
+  margin: 13px;
 }
 
 .input-table {
   padding: 1rem;
 }
+.ace_gutter {
+  height: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  z-index: 0;
+}
+
+#react-select-3-live-region {
+  height: 1.4375em;
+}
 
 table {
   border-spacing: 0;
   border: 1px solid black;
+}
+
+.ace_editor {
+  margin-bottom: 20px;
+}
+
+.ace_content {
+  height: 100% !important;
 }
 
 th,
@@ -18,4 +38,147 @@ td {
   padding: 0.5rem;
   border-bottom: 1px solid black;
   border-right: 1px solid black;
+}
+
+.app-container {
+  padding: 10px;
+  display: flex;
+  /* height: 60vh; */
+}
+
+.MuiTextField-root {
+  width: 100%;
+  margin-bottom: 15px !important;
+}
+.form-container {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 60%;
+  /* overflow-y: scroll; */
+}
+.ace_scroller {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.tabs-container {
+  padding-left: 15px;
+  flex-grow: 0;
+  flex-basis: 40%;
+}
+.tabs-list {
+  margin-top: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.configuration-heading {
+  margin-left: 0;
+}
+
+.horizontal-line {
+  color: black;
+  height: 100vh;
+}
+.react-select-container {
+  width: 250px;
+  margin-right: 7px;
+}
+
+button {
+  background-color: dodgerblue;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.text-right {
+  text-align: right;
+}
+.copy-btn {
+  background-color: transparent;
+  border: 1px solid grey;
+  border-bottom: none;
+  color: black;
+}
+
+.input-field {
+  padding: 8px 5px;
+  border: 1px solid grey;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.input-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.question-data-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.question-data-key {
+  max-width: 300px;
+  flex-shrink: 0;
+  flex-basis: 30%;
+}
+
+.question-data-row {
+  flex-grow: 1;
+  flex-basis: 70%;
+}
+
+ul {
+  padding: 0;
+}
+
+.tab-item {
+  list-style-type: none;
+}
+
+.tab-button {
+  color: #7b8794;
+  font-family: "Roboto";
+  font-size: 14px;
+  font-weight: 500;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  border-bottom: 2px solid #dfe2e5;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 4px;
+  padding-top: 0;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px) {
+  .tab-button {
+    font-size: 16px;
+    padding-left: 26px;
+    padding-right: 26px;
+    padding-bottom: 8px;
+  }
+}
+.react-json-view {
+  min-height: 400px;
+}
+
+.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+  padding-bottom: 8px;
+}
+
+@media screen and (min-width: 768px) {
+  .active {
+    padding-bottom: 12px;
+  }
 }
