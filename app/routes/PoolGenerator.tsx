@@ -909,14 +909,17 @@ export default function McqPoolBuilder() {
             inputs: generatedInputs,
             cOptions,
             wOptions,
-            inputVariables
+            inputVariables: inputVariables ? inputVariables : ""
         }
         return generatedQuestionsData
     }
 
     const getQuestionTextToAddBasedOnTemplateType = (variables) => {
+
+        let variableString = IsStringContainsNewLine(variables) ? variables.replace("\n", ",").replace("\r", ",") : checkIsStringContainCharacter(variables, " ") ? variables.replace(" ", ",") : variables
+
         if (includesRequiredTemplateType(templateTypesArray[4])) {
-            return `\nInputs are ${variables}`
+            return `\nInputs are ${variableString}${IsStringContainsNewLine(variables) ? ' with line separated' : checkIsStringContainCharacter(variables, " ") ? ' with space separated' : ""}`
         }
         else {
             return ""
@@ -1073,7 +1076,7 @@ export default function McqPoolBuilder() {
                 onChange={onChangeEditor}
             /> */}
             {/* {includesRequiredTemplateType(templateTypesArray[4]) === true ? <TextFieldElement name="inputVariables" label="Input Variables" required className="question-text-field" /> : null} */}
-            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <textarea name="inputVariables" placeholder="Input Variables" onChange={onChangeInputVariablesTextarea} required className="question-text-field"></textarea> : null}
+            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Input Variables" onChange={onChangeInputVariablesTextarea} required></textarea></div> : null}
             <br />
             <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
             <br />
@@ -1316,39 +1319,33 @@ export default function McqPoolBuilder() {
 
     }
 
+    const checkIsStringContainCharacter = (string, character) => {
+        return string.includes(character)
+    }
+
+    const IsStringContainsNewLine = (inputVariables) => {
+        if (inputVariables) {
+            return (checkIsStringContainCharacter(inputVariables, "\n") || checkIsStringContainCharacter(inputVariables, "\r"))
+        }
+        return false
+    }
+
     async function getEvaluatedPythonOutputs(json) {
         let pyodide = await pyodideInstance;
 
-        const getPythonOutput = (code, variableValue) => {
+        const getPythonOutput = (code, variableValues) => {
 
             let codeWithSlashNIndents = code.replaceAll("\n", "\n        ")
             let codeWithSlashRIndents = code.replaceAll("\r", "\r        ")
 
-            let index = 0;
-            
-            //FIX: Not working with multiline inputs
-            const getOnlyOneInputValue = () => {
-                const variableValueFromIndex = variableValue[index]
-                index += 1
-                console.log(JSON.stringify(variableValueFromIndex.toString()))
-                return JSON.stringify(variableValueFromIndex.toString())
+
+            const getInputsSeparatedByNewLine = () => {
+                return variableValues.join("\\n").replaceAll("\"", "")
             }
 
             const { inputVariables } = questionsData
 
-            const checkIsStringContainCharacter = (string, character) => {
-                return string.includes(character)
-            }
-
-            const IsStringContainsNewLine = (inputVariables) => {
-                if (inputVariables) {
-                    return (checkIsStringContainCharacter(inputVariables, "\n") || checkIsStringContainCharacter(inputVariables, "\n"))
-                }
-                return false
-            }
-
-            const stringifiedVariableValue = variableValue ? JSON.stringify(variableValue.join(" ")) : ""
-
+            const stringifiedVariableValue = variableValues ? variableValues.join(" ").replaceAll("\"", "") : ""
 
             let pythonCode = `from io import StringIO
 import sys
@@ -1356,7 +1353,7 @@ from contextlib import _RedirectStream
 class redirect_stdin(_RedirectStream):
     _stream = "stdin"
 
-with redirect_stdin(StringIO(${IsStringContainsNewLine(inputVariables) ? getOnlyOneInputValue() : stringifiedVariableValue})):
+with redirect_stdin(StringIO(${IsStringContainsNewLine(inputVariables) ? `"${getInputsSeparatedByNewLine()}"` : `"${stringifiedVariableValue}"`})):
     class Capturing(list):
         def __enter__(self):
             self._stdout = sys.stdout
@@ -1392,9 +1389,9 @@ list(output)`
 
             let codeOutput = getPythonOutput(eachObj.code, inputVariableValue)
 
-            console.log(codeOutput, 'co')
+            let cOptions = codeOutput.join("\n")
 
-            let object = { ...eachObj, cOptions: codeOutput }
+            let object = { ...eachObj, cOptions }
 
             return object
         })
