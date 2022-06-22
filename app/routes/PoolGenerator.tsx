@@ -11,6 +11,9 @@ import '../styles/pool-generator.css'
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Table from "~/components/table";
+import { IoPlayForward } from "react-icons/io5";
+import { IconContext } from "react-icons"
+
 
 import stylesUrl from "~/styles/pool-generator.css";
 
@@ -19,6 +22,7 @@ const ReactJson = loadable(() => new Promise((r, c) => import('react-json-view')
 const st = new ST();
 
 import CodeEditor from "../components/codeEditor.client";
+import ResponsiveContainer from "~/components/responsiveContainer";
 
 
 export const links: LinksFunction = () => {
@@ -258,7 +262,6 @@ export default function McqPoolBuilder() {
         // TODO: Add to util to convert into integer if integer or string
         setQuestionsData(prevQuestionData => ({ ...prevQuestionData, ...data, cOptions: updatedCOptions, wOptions: updatedWOptions }))
         setFormView(formViews[1])
-
     }
 
     const extractInputs = (questionData) => {
@@ -321,6 +324,7 @@ export default function McqPoolBuilder() {
 
     useEffect(() => {
         if (questionsData.templateTypes) {
+            console.log(getInputsBasedOnTemplateType(), 'inputs tem')
             setInputs(getInputsBasedOnTemplateType())
         }
     }, [formView]);
@@ -344,6 +348,11 @@ export default function McqPoolBuilder() {
         setQuestionsData(prevQuestionData => ({ ...prevQuestionData, inputVariables: value }))
     }
 
+    const onChangeQuestionText = (event) => {
+        const { value } = event.target
+        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, questionText: value }))
+    }
+
     const renderQuestionForm = () => {
 
         return (<FormContainer
@@ -365,19 +374,21 @@ export default function McqPoolBuilder() {
                 onChange={onChangeEditor}
             /> */}
             {/* {includesRequiredTemplateType(templateTypesArray[4]) === true ? <TextFieldElement name="inputVariables" label="Input Variables" required className="question-text-field" /> : null} */}
-            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Input Variables" onChange={onChangeInputVariablesTextarea} required></textarea></div> : null}
+            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Code Input Templates" onChange={onChangeInputVariablesTextarea} required></textarea></div> : null}
             <br />
-            <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
-            <br />
+            <div className="question-text-field">
+                <textarea className="text-area" name="inputVariables" placeholder="Question Text" onChange={onChangeQuestionText} required></textarea>
+            </div>
+            <br/>
+            {/* <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
+            <br /> */}
             <TextFieldElement name="generateCount" label="No.of Variants to generate" required />
             <br />
             <TextFieldElement name="cOptions" label="Correct Options" />
             <br />
             <TextFieldElement name="wOptions" label="Wrong Options" />
             <br />
-            <div className="text-right">
-                <button type="submit">Proceed</button>
-            </div>
+            <button type="submit" hidden id="proceedBtn">Proceed</button>
         </FormContainer>)
     }
 
@@ -737,6 +748,10 @@ list(output)`
         generateRandomInputsWithInputsProvided()
     }
 
+    const onClickPlayIcon = () => {
+        document.getElementById("proceedBtn")?.click()
+    }
+
     const onValidatePythonCodeOutputs = async () => {
 
         const stringifiedOutputJson = JSON.stringify(outputJson)
@@ -765,10 +780,10 @@ list(output)`
         return (
             <div>
                 {inputs?.map(eachInput => renderInputRow(eachInput))}
-                <div>
-                    {/* <button onClick={onClickBack}>Back</button> */}
+                {/* <div>
                     <button onClick={onGenerateData}>Generate Data</button>
-                </div>
+                </div> */}
+                {/* <button onClick={onClickBack}>Back</button> */}
             </div>
         )
 
@@ -779,7 +794,7 @@ list(output)`
             <>
                 <CopyToClipboard text={JSON.stringify(outputJson)}
                     onCopy={onCopyCode}>
-                    <div className="text-right">
+                    <div className="copy-to-clipboard-container">
                         {isCopied ? <span>Copied</span> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
@@ -792,15 +807,29 @@ list(output)`
         setActiveTab(id)
     }
 
+    console.log(questionsData, 'onClickPlayIcon')
+    console.log(inputs, 'inputs')
+
     return (
-        <div>
+        <>
             <p className="app-heading">MCQ Pool Builder</p>
-            <div className="app-container">
-                <div className="form-container">
-                    {renderFormView()}
+            <ResponsiveContainer>
+                <div className="form-containers">
+                    <div className="form-container">
+                        {renderQuestionForm()}
+                    </div>
+                    <button className="icon-container" onClick={onClickPlayIcon}>
+                        <IoPlayForward size={30} />
+                    </button>
+                    <div className="form-container">
+                        {renderInputsForm()}
+                    </div>
                 </div>
-                <div className="separator"></div>
-                <div className="tabs-container">
+                <div>
+                    <button onClick={onGenerateData} disabled={inputs.length > 0 ? false : true}>Generate Data</button>
+                </div>
+                {/* <div className="separator"></div> */}
+                {/* <div className="tabs-container">
                     <ul className="tabs-list">
                         {tabsList.map(eachTab => (
                             <li className="tab-item">
@@ -820,8 +849,14 @@ list(output)`
                         <p>{errorMsg}</p>
                         {renderOutputJSON()}
                     </> : renderConfigurationPreviewer()}
-                </div>
-            </div>
-        </div>
+                </div> */}
+                {outputJson.length > 0 && <>
+                    <p>{errorMsg}</p>
+                    {questionsData.code !== "" && shouldValidatePythonCodeOutputs(questionsData.templateTypes) ? <button onClick={onValidatePythonCodeOutputs}>Validate Python Code Outputs</button> : null
+                    }
+                    {renderOutputJSON()}
+                </>}
+            </ResponsiveContainer>
+        </>
     );
 }

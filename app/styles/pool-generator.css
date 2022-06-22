@@ -1,12 +1,16 @@
-* {
+/* * {
   font-family: "Roboto";
-}
+} */
 
 .app-heading {
   text-align: center;
   font-weight: bold;
   font-size: 30px;
   margin: 13px;
+}
+.copy-to-clipboard-container {
+  align-self: flex-end;
+  margin-bottom: 15px;
 }
 
 .input-table {
@@ -29,14 +33,18 @@ table {
 }
 
 .ace_editor {
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .ace_content {
   height: 100% !important;
 }
-.responsive-container{
+.responsive-container {
   max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
 }
 
 th,
@@ -47,25 +55,45 @@ td {
   border-right: 1px solid black;
 }
 
-.app-container {
+/* .app-container {
   padding: 10px;
   display: flex;
   /* height: 60vh; */
-}
+/* } */
 
 .MuiTextField-root {
   width: 100%;
   margin-bottom: 15px !important;
 }
+
+.form-containers {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0px;
+}
+
 .form-container {
-  flex-grow: 1;
+  border: 1px solid;
+  border-radius: 10px;
+  margin: 0 10px;
+  padding: 25px;
+  width: 40%;
+  /* flex-grow: 1;
   flex-shrink: 0;
-  flex-basis: 60%;
+  flex-basis: 60%; */
   /* overflow-y: scroll; */
 }
 .ace_scroller {
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.icon-container {
+  align-self: center;
+  color: black;
+  background-color: transparent;
+  margin: 10px;
 }
 
 .tabs-container {
@@ -79,8 +107,14 @@ td {
   align-items: flex-end;
 }
 .text-area {
+  box-sizing: border-box;
   width: 100%;
+  padding: 10px;
   height: 70px;
+  border-radius: 4px;
+  margin-top: 0;
+  /* margin-bottom: 8px !important; */
+  border-color: rgb(0 0 0 / 31%);
 }
 
 .configuration-heading {
@@ -111,20 +145,22 @@ button {
 .copy-btn {
   background-color: transparent;
   border: 1px solid grey;
-  border-bottom: none;
   color: black;
 }
 
 .input-field {
+  width: 22%;
+  min-width: 100px;
   padding: 8px 5px;
   border: 1px solid grey;
   border-radius: 2px;
   margin-right: 5px;
+  margin-bottom: 10px;
 }
 
 .input-row {
   display: flex;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .question-data-row {
@@ -179,7 +215,8 @@ ul {
   }
 }
 .react-json-view {
-  min-height: 400px;
+  width: 100%;
+  padding: 25px;
 }
 
 .active {

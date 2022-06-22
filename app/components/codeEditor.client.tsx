@@ -19,7 +19,7 @@ const CodeEditor = (props) => {
             <AceEditor
                 width="100%"
                 fontSize={18}
-                height="400px"
+                height="200px"
                 mode="python"
                 theme="monokai"
                 onChange={changeEditor}
