@@ -1,12 +1,14 @@
-/* * {
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+* {
   font-family: "Roboto";
-} */
+}
 
 .app-heading {
   text-align: center;
   font-weight: bold;
   font-size: 30px;
-  margin: 13px;
+  margin: 30px 0px 0px 15px;
 }
 .copy-to-clipboard-container {
   align-self: flex-end;
@@ -106,6 +108,12 @@ td {
   display: flex;
   align-items: flex-end;
 }
+button:disabled,
+button[disabled] {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
 .text-area {
   box-sizing: border-box;
   width: 100%;
@@ -137,6 +145,7 @@ button {
   padding: 10px;
   border-radius: 5px;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .text-right {

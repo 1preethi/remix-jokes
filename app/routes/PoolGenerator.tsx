@@ -324,7 +324,6 @@ export default function McqPoolBuilder() {
 
     useEffect(() => {
         if (questionsData.templateTypes) {
-            console.log(getInputsBasedOnTemplateType(), 'inputs tem')
             setInputs(getInputsBasedOnTemplateType())
         }
     }, [formView]);
@@ -353,6 +352,10 @@ export default function McqPoolBuilder() {
         setQuestionsData(prevQuestionData => ({ ...prevQuestionData, questionText: value }))
     }
 
+    const isFormViewInputs = () => {
+        return formView === formViews[1]
+    }
+
     const renderQuestionForm = () => {
 
         return (<FormContainer
@@ -363,10 +366,11 @@ export default function McqPoolBuilder() {
                 options={templateTypesArray}
                 placeholder="Type of Template"
                 isMulti={true}
+                isDisabled={isFormViewInputs()}
             />
             {/* <MultiSelectElement menuItems={templateTypesArray} label="Type of Template" name="templateTypes" required /> */}
             <br />
-            {typeof document !== "undefined" ? <CodeEditor changeEditor={changeEditor} /> : <Fallback />}
+            {typeof document !== "undefined" ? <CodeEditor changeEditor={changeEditor} readOnly={isFormViewInputs()} /> : <Fallback />}
             {/* <br />
             <Editor
                 height="100px"
@@ -374,19 +378,19 @@ export default function McqPoolBuilder() {
                 onChange={onChangeEditor}
             /> */}
             {/* {includesRequiredTemplateType(templateTypesArray[4]) === true ? <TextFieldElement name="inputVariables" label="Input Variables" required className="question-text-field" /> : null} */}
-            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Code Input Templates" onChange={onChangeInputVariablesTextarea} required></textarea></div> : null}
+            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Code Input Templates" onChange={onChangeInputVariablesTextarea} required disabled={isFormViewInputs()}></textarea></div> : null}
             <br />
             <div className="question-text-field">
-                <textarea className="text-area" name="inputVariables" placeholder="Question Text" onChange={onChangeQuestionText} required></textarea>
+                <textarea className="text-area" name="inputVariables" placeholder="Question Text" onChange={onChangeQuestionText} required disabled={isFormViewInputs()}></textarea>
             </div>
-            <br/>
+            <br />
             {/* <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
             <br /> */}
-            <TextFieldElement name="generateCount" label="No.of Variants to generate" required />
+            <TextFieldElement name="generateCount" label="No.of Variants to generate" required disabled={isFormViewInputs()} />
             <br />
-            <TextFieldElement name="cOptions" label="Correct Options" />
+            <TextFieldElement name="cOptions" label="Correct Options" disabled={isFormViewInputs()} />
             <br />
-            <TextFieldElement name="wOptions" label="Wrong Options" />
+            <TextFieldElement name="wOptions" label="Wrong Options" disabled={isFormViewInputs()} />
             <br />
             <button type="submit" hidden id="proceedBtn">Proceed</button>
         </FormContainer>)
