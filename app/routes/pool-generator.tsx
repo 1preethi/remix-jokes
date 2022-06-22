@@ -12,7 +12,7 @@ import '../styles/pool-generator.css'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Table from "~/components/table";
 import { IoPlayForward } from "react-icons/io5";
-import { IconContext } from "react-icons"
+import { TiTick } from "react-icons/ti";
 
 
 import stylesUrl from "~/styles/pool-generator.css";
@@ -119,6 +119,7 @@ export default function McqPoolBuilder() {
     const [chanceInstance, setChanceInstance] = useState()
     const [generatedInputs, setGeneratedInputs] = useState([])
     const [errorMsg, setErrorMsg] = useState("")
+    const [genCount, setGenCount] = useState(4)
 
     const columns = useMemo(
         () => inputTableColumns,
@@ -128,8 +129,16 @@ export default function McqPoolBuilder() {
     const [questionsData, setQuestionsData] = useState({})
     const [inputs, setInputs] = useState([])
     const [formView, setFormView] = useState(formViews[0])
-    const [activeTab, setActiveTab] = useState(tabsList[0])
+    // const [activeTab, setActiveTab] = useState(tabsList[0])
 
+    const initializeStates = () => {
+        setQuestionsData({})
+        setFormView(formViews[0])
+        setOutputJson([])
+        setIsCopied(false)
+        setGeneratedInputs([])
+        setErrorMsg("")
+    }
 
     useEffect(() => {
         async function createAndReturnPyodideInstance() {
@@ -164,27 +173,27 @@ export default function McqPoolBuilder() {
             case inputTypes[1]:
                 switch (contextType) {
                     case contextTypes[0].value:
-                        return JSON.stringify(chanceInstance.name({ length }))
+                        return chanceInstance.name({ length })
                     case contextTypes[1].value:
-                        return JSON.stringify(chanceInstance.animal({ length }))
+                        return chanceInstance.animal({ length })
                     case contextTypes[2].value:
-                        return JSON.stringify(chanceInstance.company({ length }))
+                        return chanceInstance.company({ length })
                     case contextTypes[3].value:
-                        return JSON.stringify(chanceInstance.country({ full: true, length }))
+                        return chanceInstance.country({ full: true, length })
                     case contextTypes[4].value:
-                        return JSON.stringify(chanceInstance.city({ length }))
+                        return chanceInstance.city({ length })
                     case contextTypes[5].value:
-                        return JSON.stringify(chanceInstance.state({ full: true, length }))
+                        return chanceInstance.state({ full: true, length })
                     case contextTypes[6].value:
-                        return JSON.stringify(chanceInstance.street({ length }))
+                        return chanceInstance.street({ length })
                     case contextTypes[7].value:
-                        return JSON.stringify(chanceInstance.month({ length }))
+                        return chanceInstance.month({ length })
                     case contextTypes[8].value:
-                        return JSON.stringify(chanceInstance.profession({ length }))
+                        return chanceInstance.profession({ length })
                     case contextTypes[9].value:
-                        return JSON.stringify(chanceInstance.weekday({ length }))
+                        return chanceInstance.weekday({ length })
                     default:
-                        return JSON.stringify(chanceInstance.string({ length }))
+                        return chanceInstance.string({ length })
                 }
             case inputTypes[2]:
                 return chanceInstance.bool()
@@ -367,6 +376,7 @@ export default function McqPoolBuilder() {
                 placeholder="Type of Template"
                 isMulti={true}
                 isDisabled={isFormViewInputs()}
+                className="react-select"
             />
             {/* <MultiSelectElement menuItems={templateTypesArray} label="Type of Template" name="templateTypes" required /> */}
             <br />
@@ -386,8 +396,8 @@ export default function McqPoolBuilder() {
             <br />
             {/* <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
             <br /> */}
-            <TextFieldElement name="generateCount" label="No.of Variants to generate" required disabled={isFormViewInputs()} />
-            <br />
+            {/* <TextFieldElement name="generateCount" label="No.of Variants to generate" required disabled={isFormViewInputs()} />
+            <br /> */}
             <TextFieldElement name="cOptions" label="Correct Options" disabled={isFormViewInputs()} />
             <br />
             <TextFieldElement name="wOptions" label="Wrong Options" disabled={isFormViewInputs()} />
@@ -466,8 +476,8 @@ export default function McqPoolBuilder() {
 
         return (
             <>
-                <input className="input-field" name={`${inputName}Min`} placeholder="Min" onChange={onChangeMin} />
-                <input className="input-field" name={`${inputName}Max`} placeholder="Max" onChange={onChangeMax} />
+                <input className="input-field expand" name={`${inputName}Min`} placeholder="Min" onChange={onChangeMin} />
+                <input className="input-field expand" name={`${inputName}Max`} placeholder="Max" onChange={onChangeMax} />
             </>
         )
     }
@@ -556,8 +566,8 @@ export default function McqPoolBuilder() {
 
         return (
             <>
-                <Select options={contextTypes} onChange={onChangeContextType} name={`${inputName}ContextType`} className="react-select-container" />
-                <input className="input-field" name={`${inputName}Length`} placeholder="Length" onChange={onChangeLength} />
+                <Select options={contextTypes} onChange={onChangeContextType} name={`${inputName}ContextType`} className="react-select-container expand" />
+                <input className="input-field length-input-field" name={`${inputName}Length`} placeholder="Length" onChange={onChangeLength} />
             </>
         )
     }
@@ -566,7 +576,7 @@ export default function McqPoolBuilder() {
         const { inputName } = input
 
         return (
-            <input className="input-field" name={`${inputName}Custom`} placeholder="Custom List" onChange={onChangeCustomList} />
+            <input className="input-field expand" name={`${inputName}Custom`} placeholder="Custom List" onChange={onChangeCustomList} />
         )
     }
 
@@ -613,8 +623,8 @@ export default function McqPoolBuilder() {
 
         return (
             <div key={inputName} className="input-row">
-                <input className="input-field" placeholder="Input Name" value={inputName} name={`${inputName}InputName`} onChange={onChangeInputName} />
-                <select className="input-field" value={inputType} onChange={onChangeInputType} name={`${inputName}InputType`}>
+                <input className="input-field input-name-field" placeholder="Input Name" value={inputName} name={`${inputName}InputName`} onChange={onChangeInputName} />
+                <select className="input-field select-field" value={inputType} onChange={onChangeInputType} name={`${inputName}InputType`}>
                     {inputTypes.map(eachInputType => <option value={eachInputType}>{eachInputType}</option>)}
                 </select>
                 {renderFieldsBasedOnInputType(input)}
@@ -634,6 +644,14 @@ export default function McqPoolBuilder() {
         return false
     }
 
+    const convertTitleToSnakeCase = (string) => {
+        const stringArr = string.split(' ');
+        const snakeArr = stringArr.reduce((acc, val) => {
+            return acc.concat(val.toLowerCase());
+        }, []);
+        return snakeArr.join('_');
+    }
+
     async function getEvaluatedPythonOutputs(json) {
         let pyodide = await pyodideInstance;
 
@@ -644,12 +662,13 @@ export default function McqPoolBuilder() {
 
 
             const getInputsSeparatedByNewLine = () => {
-                return variableValues.join("\\n").replaceAll("\"", "")
+                // return variableValues.join("\\n").replaceAll("\"", "")
+                return variableValues.join("\\n")
             }
 
             const { inputVariables } = questionsData
 
-            const stringifiedVariableValue = variableValues ? variableValues.join(" ").replaceAll("\"", "") : ""
+            const stringifiedVariableValue = variableValues ? variableValues.join(" ") : ""
 
             let pythonCode = `from io import StringIO
 import sys
@@ -704,7 +723,6 @@ list(output)`
     }
 
     const generateRandomInputsWithInputsProvided = () => {
-        const { generateCount } = questionsData
 
         const createInputObject = () => {
             let inputObject = {}
@@ -717,7 +735,7 @@ list(output)`
 
         let inputsData = []
 
-        for (let i = 0; i < generateCount; i++) {
+        for (let i = 0; i < genCount; i++) {
             inputsData.push(createInputObject())
         }
 
@@ -779,11 +797,20 @@ list(output)`
         setFormView(formViews[0])
     }
 
+    const onChangeGenCount = (event) => {
+        setGenCount(parseInt(event.target.value))
+    }
+
     const renderInputsForm = () => {
 
         return (
             <div>
                 {inputs?.map(eachInput => renderInputRow(eachInput))}
+                {inputs.length > 0 ? <div className="generate-count-field">
+                    <label>Generate Count: </label>
+                    <input type="text" placeholder="Generate Count" className="input-field" value={genCount} onChange={onChangeGenCount} />
+                </div> : null}
+
                 {/* <div>
                     <button onClick={onGenerateData}>Generate Data</button>
                 </div> */}
@@ -799,10 +826,10 @@ list(output)`
                 <CopyToClipboard text={JSON.stringify(outputJson)}
                     onCopy={onCopyCode}>
                     <div className="copy-to-clipboard-container">
-                        {isCopied ? <span>Copied</span> : <button className="copy-btn">Copy to clipboard</button>}
+                        {isCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={outputJson} theme="monokai" style={{ whiteSpace: 'pre' }} />
+                <ReactJson src={outputJson} theme="monokai" style={{ whiteSpace: 'pre' }} enableClipboard={false} />
             </>)
     }
 
@@ -811,8 +838,9 @@ list(output)`
         setActiveTab(id)
     }
 
-    console.log(questionsData, 'onClickPlayIcon')
-    console.log(inputs, 'inputs')
+    const onResetData = () => {
+        initializeStates()
+    }
 
     return (
         <>
@@ -830,6 +858,7 @@ list(output)`
                     </div>
                 </div>
                 <div>
+                    <button onClick={onResetData}>Reset</button>
                     <button onClick={onGenerateData} disabled={inputs.length > 0 ? false : true}>Generate Data</button>
                 </div>
                 {/* <div className="separator"></div> */}

@@ -1,18 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 
-* {
-  font-family: "Roboto";
-}
-
 .app-heading {
   text-align: center;
   font-weight: bold;
   font-size: 30px;
   margin: 30px 0px 0px 15px;
+  font-family: "Roboto";
 }
 .copy-to-clipboard-container {
   align-self: flex-end;
   margin-bottom: 15px;
+  font-family: "Roboto";
 }
 
 .input-table {
@@ -25,6 +23,19 @@
   z-index: 0;
 }
 
+.ace_scroller {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.ace_editor {
+  margin-bottom: 20px;
+}
+
+.ace_content {
+  height: 100% !important;
+}
+
 #react-select-3-live-region {
   height: 1.4375em;
 }
@@ -34,13 +45,6 @@ table {
   border: 1px solid black;
 }
 
-.ace_editor {
-  /* margin-bottom: 20px; */
-}
-
-.ace_content {
-  height: 100% !important;
-}
 .responsive-container {
   max-width: 1200px;
   display: flex;
@@ -66,13 +70,14 @@ td {
 .MuiTextField-root {
   width: 100%;
   margin-bottom: 15px !important;
+  font-family: "Roboto";
 }
 
 .form-containers {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 20px 0px;
+  margin: 35px 0px;
 }
 
 .form-container {
@@ -85,10 +90,6 @@ td {
   flex-shrink: 0;
   flex-basis: 60%; */
   /* overflow-y: scroll; */
-}
-.ace_scroller {
-  padding-top: 10px;
-  padding-bottom: 10px;
 }
 
 .icon-container {
@@ -121,6 +122,7 @@ button[disabled] {
   height: 70px;
   border-radius: 4px;
   margin-top: 0;
+  font-family: "Roboto";
   /* margin-bottom: 8px !important; */
   border-color: rgb(0 0 0 / 31%);
 }
@@ -133,9 +135,17 @@ button[disabled] {
   color: black;
   height: 100vh;
 }
+
+.generate-count-field {
+  margin-top: 10px;
+}
 .react-select-container {
-  width: 250px;
   margin-right: 7px;
+  font-family: "Roboto";
+}
+
+.react-select {
+  font-family: "Roboto";
 }
 
 button {
@@ -146,8 +156,16 @@ button {
   border-radius: 5px;
   font-size: 14px;
   cursor: pointer;
+  margin: 10px;
+  font-family: "Roboto";
 }
 
+.copied-container {
+  display: flex;
+  align-items: center;
+  color: green;
+  font-family: "Roboto";
+}
 .text-right {
   text-align: right;
 }
@@ -157,14 +175,25 @@ button {
   color: black;
 }
 
+.expand {
+  flex-grow: 1;
+}
+
 .input-field {
   width: 22%;
-  min-width: 100px;
+  min-width: 76px;
   padding: 8px 5px;
   border: 1px solid grey;
   border-radius: 2px;
   margin-right: 5px;
   margin-bottom: 10px;
+  font-family: "Roboto";
+}
+
+.select-field,
+.input-name-field,
+.length-input-field {
+  width: 5%;
 }
 
 .input-row {
