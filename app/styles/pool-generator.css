@@ -1,3 +1,7 @@
+* {
+  font-family: "Roboto";
+}
+
 .app-heading {
   text-align: center;
   font-weight: bold;
@@ -30,6 +34,9 @@ table {
 
 .ace_content {
   height: 100% !important;
+}
+.responsive-container{
+  max-width: 1200px;
 }
 
 th,
