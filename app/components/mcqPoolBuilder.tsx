@@ -905,7 +905,7 @@ list(output)`
                         {isContentJsonCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={contentJson} theme="monokai" {{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
+                <ReactJson src={contentJson} theme="monokai" style={{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
             </>)
     }
 
@@ -919,7 +919,7 @@ list(output)`
                         {isTemplatesJsonCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={getGeneratedQuestionsData()} theme="monokai" {{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
+                <ReactJson src={getGeneratedQuestionsData()} theme="monokai" style={{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
             </>)
     }
 
