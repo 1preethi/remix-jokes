@@ -10,7 +10,7 @@ export default function Index() {
                 <nav>
                     <ul>
                         <li>
-                            <Link to="pool-generator">Pool Generator</Link>
+                            <Link to="mcq-builder">MCQ Builder</Link>
                         </li>
                     </ul>
                 </nav>

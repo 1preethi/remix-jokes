@@ -106,7 +106,7 @@ const Fallback = () => {
 
 // const tabsList = ["OUTPUT JSON", "CONFIGURATION PREVIEWER"]
 
-const tabsList = ["CONTENT JSON", "POOL JSON"]
+const tabsList = ["CONTENT JSON", "POOL JSON", "TEMPLATE JSON"]
 
 let index = 0;
 
@@ -116,6 +116,7 @@ export default function McqPoolBuilder(props) {
     const [outputJson, setOutputJson] = useState([])
     const [isCopied, setIsCopied] = useState(false)
     const [isContentJsonCopied, setIsContentJsonCopied] = useState(false)
+    const [isTemplatesJsonCopied, setIsTemplatesJsonCopied] = useState(false)
     const [chanceInstance, setChanceInstance] = useState()
     const [generatedInputs, setGeneratedInputs] = useState([])
     const [errorMsg, setErrorMsg] = useState("")
@@ -138,6 +139,7 @@ export default function McqPoolBuilder(props) {
         setOutputJson([])
         setIsCopied(false)
         setIsContentJsonCopied(false)
+        setIsTemplatesJsonCopied(false)
         setGeneratedInputs([])
         setErrorMsg("")
         setActiveTab(tabsList[0])
@@ -203,7 +205,7 @@ export default function McqPoolBuilder(props) {
 
         const generatedQuestionsData = {
             questionText,
-            code,
+            code: code ? code : "",
             templateId: templateId.value,
             inputs: generatedInputs,
             cOptions,
@@ -231,7 +233,7 @@ export default function McqPoolBuilder(props) {
                 questionId: chanceInstance.guid({ version: 4 }),
                 templateId: question.templateId + "_{{$index+1}}",
                 questionText: question.questionText + getQuestionTextToAddBasedOnTemplateType(question.inputVariables),
-                code: question.code === undefined ? "" : question.code,
+                code: question.code,
                 concept: "",
                 broadLevelConcept: "",
                 variantName: "",
@@ -847,6 +849,10 @@ list(output)`
         setIsContentJsonCopied(true)
     }
 
+    const onCopyTemplatesJsonCode = () => {
+        setIsTemplatesJsonCopied(true)
+    }
+
     // const onClickBack = () => {
     //     setFormView(formViews[0])
     // }
@@ -883,7 +889,7 @@ list(output)`
                         {isCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={outputJson} theme="monokai" style={{ whiteSpace: 'pre' }} enableClipboard={false} style={{ "height": "300px", "overflow": "scroll" }} />
+                <ReactJson src={outputJson} theme="monokai" style={{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
             </>)
     }
 
@@ -899,7 +905,21 @@ list(output)`
                         {isContentJsonCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={contentJson} theme="monokai" style={{ whiteSpace: 'pre' }} enableClipboard={false} style={{ "height": "300px", "overflow": "scroll" }} />
+                <ReactJson src={contentJson} theme="monokai" {{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
+            </>)
+    }
+
+    const renderTemplateJson = () => {
+
+        return (
+            <>
+                <CopyToClipboard text={JSON.stringify(getGeneratedQuestionsData())}
+                    onCopy={onCopyTemplatesJsonCode}>
+                    <div className="copy-to-clipboard-container">
+                        {isTemplatesJsonCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
+                    </div>
+                </CopyToClipboard>
+                <ReactJson src={getGeneratedQuestionsData()} theme="monokai" {{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
             </>)
     }
 
@@ -987,6 +1007,17 @@ list(output)`
     //     initializeStates()
     // }
 
+    const renderJson = () => {
+        switch (activeTab) {
+            case tabsList[0]:
+                return renderContentJSON()
+            case tabsList[1]:
+                return renderPoolJSON()
+            case tabsList[2]:
+                return renderTemplateJson()
+        }
+    }
+
     const renderJSONTabs = () => {
         return (
             <>
@@ -1004,7 +1035,7 @@ list(output)`
                         </li>
                     ))}
                 </ul>
-                {activeTab === tabsList[0] ? renderContentJSON() : renderPoolJSON()}
+                {renderJson()}
             </>)
     }
 
@@ -1060,4 +1091,3 @@ list(output)`
         </>
     );
 }
-
