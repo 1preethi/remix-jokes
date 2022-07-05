@@ -33,6 +33,12 @@ import {
 //   ];
 // };
 
+import styles from "./styles/app.css"
+
+export function links() {
+  return [{ rel: "stylesheet", href: styles }]
+}
+
 export const meta: MetaFunction = () => {
   const description = `Learn Remix and laugh at the same time!`;
   return {
@@ -61,6 +67,7 @@ function Document({
         <Meta />
         {/* <script defer src="https://pyscript.net/alpha/pyscript.js"></script> */}
         {/* <script src="/pyodide_script.js"></script>https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js */}
+        <link href="/dist/output.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
         <script src="http://chancejs.com/chance.min.js"></script>
         <Links />

@@ -108,8 +108,6 @@ const Fallback = () => {
 
 const tabsList = ["CONTENT JSON", "POOL JSON", "TEMPLATE JSON"]
 
-let index = 0;
-
 export default function McqPoolBuilder(props) {
     const { pyodideInstance } = props
 
@@ -427,15 +425,15 @@ export default function McqPoolBuilder(props) {
     }
 
 
-    const renderFormView = () => {
-        switch (formView) {
-            case formViews[0]:
-                return renderQuestionForm()
-            case formViews[1]:
-                return renderInputsForm()
-        }
+    // const renderFormView = () => {
+    //     switch (formView) {
+    //         case formViews[0]:
+    //             return renderQuestionForm()
+    //         case formViews[1]:
+    //             return renderInputsForm()
+    //     }
 
-    }
+    // }
 
     const renderPreviewFieldBasedOnQuestionData = (key, keyValue) => {
         switch (key) {
