@@ -1,12 +1,24 @@
-* {
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+.app-heading {
+  font-weight: bold;
+  font-size: 30px;
+  margin: 30px 0px;
   font-family: "Roboto";
 }
 
-.app-heading {
+.app-sub-heading {
   text-align: center;
   font-weight: bold;
-  font-size: 30px;
-  margin: 13px;
+  font-size: 25px;
+  margin: 30px 0px 0px 15px;
+  font-family: "Roboto";
+}
+
+.copy-to-clipboard-container {
+  align-self: flex-end;
+  margin-bottom: 15px;
+  font-family: "Roboto";
 }
 
 .input-table {
@@ -18,6 +30,22 @@
   padding-bottom: 10px;
   z-index: 0;
 }
+.m-10 {
+  margin-bottom: 10px;
+}
+
+.ace_scroller {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.ace_editor {
+  margin-bottom: 20px;
+}
+
+.ace_content {
+  height: 100% !important;
+}
 
 #react-select-3-live-region {
   height: 1.4375em;
@@ -28,15 +56,13 @@ table {
   border: 1px solid black;
 }
 
-.ace_editor {
-  margin-bottom: 20px;
-}
-
-.ace_content {
-  height: 100% !important;
-}
-.responsive-container{
+.responsive-container {
   max-width: 1200px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
 }
 
 th,
@@ -47,25 +73,42 @@ td {
   border-right: 1px solid black;
 }
 
-.app-container {
+/* .app-container {
   padding: 10px;
   display: flex;
   /* height: 60vh; */
-}
+/* } */
 
 .MuiTextField-root {
   width: 100%;
   margin-bottom: 15px !important;
+  font-family: "Roboto";
 }
+
+.form-containers {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 35px 0px;
+}
+
 .form-container {
-  flex-grow: 1;
+  border: 1px solid;
+  border-radius: 10px;
+  margin: 0 10px;
+  padding: 25px;
+  width: 40%;
+  /* flex-grow: 1;
   flex-shrink: 0;
-  flex-basis: 60%;
+  flex-basis: 60%; */
   /* overflow-y: scroll; */
 }
-.ace_scroller {
-  padding-top: 10px;
-  padding-bottom: 10px;
+
+.icon-container {
+  align-self: center;
+  color: black;
+  background-color: transparent;
+  margin: 10px;
 }
 
 .tabs-container {
@@ -78,9 +121,22 @@ td {
   display: flex;
   align-items: flex-end;
 }
+button:disabled,
+button[disabled] {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
 .text-area {
+  box-sizing: border-box;
   width: 100%;
+  padding: 10px;
   height: 70px;
+  border-radius: 4px;
+  margin-top: 0;
+  font-family: "Roboto";
+  /* margin-bottom: 8px !important; */
+  border-color: rgb(0 0 0 / 31%);
 }
 
 .configuration-heading {
@@ -91,9 +147,17 @@ td {
   color: black;
   height: 100vh;
 }
+
+.generate-count-field {
+  margin-top: 10px;
+}
 .react-select-container {
-  width: 250px;
   margin-right: 7px;
+  font-family: "Roboto";
+}
+
+.react-select {
+  font-family: "Roboto";
 }
 
 button {
@@ -103,28 +167,50 @@ button {
   padding: 10px;
   border-radius: 5px;
   font-size: 14px;
+  cursor: pointer;
+  margin: 10px;
+  font-family: "Roboto";
 }
 
+.copied-container {
+  display: flex;
+  align-items: center;
+  color: green;
+  font-family: "Roboto";
+}
 .text-right {
   text-align: right;
 }
 .copy-btn {
   background-color: transparent;
   border: 1px solid grey;
-  border-bottom: none;
   color: black;
 }
 
+.expand {
+  flex-grow: 0.2;
+}
+
 .input-field {
+  width: 22%;
+  min-width: 76px;
   padding: 8px 5px;
   border: 1px solid grey;
   border-radius: 2px;
   margin-right: 5px;
+  margin-bottom: 10px;
+  font-family: "Roboto";
+}
+
+.select-field,
+.input-name-field,
+.length-input-field {
+  width: 5%;
 }
 
 .input-row {
   display: flex;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .question-data-row {
@@ -179,7 +265,8 @@ ul {
   }
 }
 .react-json-view {
-  min-height: 400px;
+  width: 100%;
+  padding: 25px;
 }
 
 .active {
