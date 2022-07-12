@@ -12,11 +12,12 @@ import "ace-builds/src-noconflict/ext-language_tools";
 
 
 const CodeEditor = (props) => {
-    const { changeEditor } = props
+    const { changeEditor, code } = props
 
     return (
         <div>
             <AceEditor
+                value={code}
                 width="100%"
                 fontSize={18}
                 height="200px"

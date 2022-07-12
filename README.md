@@ -148,7 +148,7 @@ Sub tasks:
 Build:
 - Upload templates json, prod json in two file uploads respectively
 - Not disabling proceed
-- Add form validations
+- Add form validations - didn't do (I think not needed - ask RP)
 
 Task: MCQ Review
 
@@ -219,3 +219,35 @@ Others by me:
 
 - Markdown support
 - Images in Question Text
+
+
+**Structure:**
+
+Core:
+
+Format of the data taking from user and validating the user data.
+
+- Maintaining fields and validation utils as properties and methods in javascript/typescript classes
+
+Our case: 
+
+- Template Options: Pass all the input fields value to class
+- Template Creation: creating a template
+
+Returns an object.
+
+Remix/UX:
+
+UI:
+
+
+Struckups:
+
+- How to use one form data in another form data - action
+- Form post submission does not retain search parameters
+
+
+Insights:
+
+- Write Server Files
+- Structuring Nested ROutes

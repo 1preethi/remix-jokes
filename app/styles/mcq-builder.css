@@ -92,6 +92,10 @@ td {
   margin: 35px 0px;
 }
 
+.form-major-container {
+  width: 60%;
+}
+
 .form-container {
   border: 1px solid;
   border-radius: 10px;
@@ -102,6 +106,19 @@ td {
   flex-shrink: 0;
   flex-basis: 60%; */
   /* overflow-y: scroll; */
+}
+
+.form {
+  border: 1px solid;
+  border-radius: 10px;
+  margin: 0;
+  padding: 25px;
+  width: 70%;
+}
+
+.m-auto {
+  display: flex;
+  margin: auto;
 }
 
 .icon-container {
@@ -137,6 +154,16 @@ button[disabled] {
   font-family: "Roboto";
   /* margin-bottom: 8px !important; */
   border-color: rgb(0 0 0 / 31%);
+}
+
+.question-form-input-field {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: "Roboto";
+  /* margin-bottom: 8px; */
+  border: 1px solid rgb(0 0 0 / 31%);
 }
 
 .configuration-heading {
@@ -279,4 +306,11 @@ ul {
   .active {
     padding-bottom: 12px;
   }
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flex-grow {
 }

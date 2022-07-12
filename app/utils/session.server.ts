@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 
 import { db } from "./db.server";
+import "dotenv/config";
 
 type LoginForm = {
   username: string;
@@ -30,24 +31,27 @@ export async function login({ username, password }: LoginForm) {
 }
 
 const sessionSecret = process.env.SESSION_SECRET;
+
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET must be set");
 }
 
-const storage = createCookieSessionStorage({
+export const storage = createCookieSessionStorage({
   cookie: {
     name: "RJ_session",
     // normally you want this to be `secure: true`
     // but that doesn't work on localhost for Safari
     // https://web.dev/when-to-use-local-https/
+    // maxAge: 60 * 60 * 24 * 30,
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30,
     httpOnly: true,
   },
 });
+
+export const { getSession, commitSession, destroySession } = storage;
 
 function getUserSession(request: Request) {
   return storage.getSession(request.headers.get("Cookie"));

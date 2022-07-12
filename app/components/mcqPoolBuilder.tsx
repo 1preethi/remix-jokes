@@ -1,6 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
 
-import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
+import type {
+    ActionFunction
+} from "@remix-run/node";
+import {
+    Form,
+    Link,
+    useActionData,
+    useCatch,
+    useTransition,
+} from "@remix-run/react";
+
 import Select from 'react-select';
 import Chance from 'chance';
 import { SelectTransform as ST } from 'selecttransform';
@@ -11,6 +21,8 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Table from "~/components/table";
 import { IoPlayForward } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
+import { useForm, Controller } from "react-hook-form";
+import { TextField, Checkbox } from "@material-ui/core";
 
 const ReactJson = loadable(() => new Promise((r, c) => import('react-json-view').then(result => r(result.default), c)))
 
@@ -20,7 +32,7 @@ import CodeEditor from "./codeEditor.client";
 import ResponsiveContainer from "~/components/responsiveContainer";
 
 
-const templateIdsArray = Array.from(Array(30).keys()).map(eachNum => ({ "value": `t${eachNum + 1}`, "label": `t${eachNum + 1}` }))
+const initialTemplateIdsArray = Array.from(Array(30).keys()).map(eachNum => ({ "value": `t${eachNum + 1}`, "label": `t${eachNum + 1}` }))
 
 const questionTypes = ["CODE_ANALYSIS_MULTIPLE_CHOICE", "CODE_ANALYSIS_MORE_THAN_ONE_MULTIPLE_CHOICE", "MULTIPLE_CHOICE", "MORE_THAN_ONE_MULTIPLE_CHOICE"]
 
@@ -110,6 +122,23 @@ const tabsList = ["CONTENT JSON", "POOL JSON", "TEMPLATE JSON"]
 
 export default function McqPoolBuilder(props) {
     const { pyodideInstance } = props
+    const [fileReader, setFileReader] = useState()
+
+    const [prodJson, setProdJson] = useState({})
+    const [templateJson, setTemplateJson] = useState([])
+
+    const [templateIdsArray, setTemplateIdsArray] = useState(initialTemplateIdsArray)
+
+    const [templateTypes, setTemplateTypes] = useState([])
+    const [templateId, setTemplateId] = useState({})
+    const [questionText, setQuestionText] = useState("")
+    const [inputVariables, setInputVariables] = useState("")
+    const [code, setCode] = useState("")
+    const [cOptions, setCOptions] = useState("")
+    const [wOptions, setWOptions] = useState("")
+
+    const [questionsData, setQuestionsData] = useState({})
+    const [inputs, setInputs] = useState([])
 
     const [outputJson, setOutputJson] = useState([])
     const [isCopied, setIsCopied] = useState(false)
@@ -126,13 +155,20 @@ export default function McqPoolBuilder(props) {
         [outputJson]
     );
 
-    const [questionsData, setQuestionsData] = useState({})
-    const [inputs, setInputs] = useState([])
     const [formView, setFormView] = useState(formViews[0])
     // const [activeTab, setActiveTab] = useState(tabsList[0])
 
     const initializeStates = () => {
+        setTemplateTypes([])
+        setTemplateId({})
+        setQuestionText("")
+        setCode("")
+        setInputVariables("")
+        setCOptions("")
+        setWOptions("")
+
         setQuestionsData({})
+        setInputs([])
         setFormView(formViews[0])
         setOutputJson([])
         setIsCopied(false)
@@ -145,7 +181,9 @@ export default function McqPoolBuilder(props) {
 
     useEffect(() => {
         const chance = new Chance()
+        const reader = new FileReader()
         setChanceInstance(chance)
+        setFileReader(reader)
     }, [])
 
     const convertCamelToTitleCase = (text) => {
@@ -154,6 +192,26 @@ export default function McqPoolBuilder(props) {
         const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
 
         return finalResult
+    }
+
+    const convertProdToTemplatesJson = (prodJson) => {
+        const templatesJson = prodJson.questions.map((eachQuestionObj, index) => {
+            const { question, options, code_analysis } = eachQuestionObj
+            let questionObj = {}
+            questionObj.templateTypes = []
+            questionObj.questionText = question.content
+            questionObj.templateId = `t${index + 1}`
+            questionObj.code = ""
+            questionObj.inputVariables = ""
+            questionObj.cOptions = []
+            questionObj.wOptions = options.map(eachOptionObj => eachOptionObj.content)
+            if (code_analysis) {
+                questionObj.code = code_analysis.code_details.code
+            }
+            return questionObj
+        })
+
+        return templatesJson
     }
 
     const getChanceRandomValueBasedOnInputType = (input) => {
@@ -200,6 +258,8 @@ export default function McqPoolBuilder(props) {
 
     const getGeneratedQuestionsData = () => {
         const { questionText, code, cOptions, wOptions, inputVariables, templateId } = questionsData
+
+        console.log(templateId, 'template id')
 
         const generatedQuestionsData = {
             questionText,
@@ -257,22 +317,24 @@ export default function McqPoolBuilder(props) {
         return shouldValidate
     }
 
-    const isQuestionDataValid = () => {
-        return questionsData.templateTypes !== undefined && questionsData.templateId !== undefined
-    }
+    // const isQuestionDataValid = () => {
+    //     return questionsData.templateTypes.length && questionsData.templateId.keys().length
+    // }
 
-    const onProceed = (data) => {
-        const { cOptions, wOptions } = data // TODO:Add to util to convert into array when given string with , separated
+    const onProceed = () => {
 
-        const cOPtionsArray = cOptions === undefined ? [] : cOptions.split(',').map((char) => char.trim())
-        const wOPtionsArray = wOptions === undefined ? [] : wOptions.split(',').map((char) => char.trim())
+        const cOPtionsArray = cOptions === "" ? [] : cOptions.split(',').map((char) => {
+            const charWithoutSpaces = char.trim()
+            return isNaN(Number(charWithoutSpaces)) ? charWithoutSpaces : Number(charWithoutSpaces)
+        })
 
-        const updatedCOptions = cOPtionsArray.map(eachItem => isNaN(Number(eachItem)) ? eachItem : Number(eachItem))
-        const updatedWOptions = wOPtionsArray.map(eachItem => isNaN(Number(eachItem)) ? eachItem : Number(eachItem))
+        const wOPtionsArray = wOptions === "" ? [] : wOptions.split(',').map((char) => {
+            const charWithoutSpaces = char.trim()
+            return isNaN(Number(charWithoutSpaces)) ? charWithoutSpaces : Number(charWithoutSpaces)
+        })
 
         // TODO: Add to util to convert into integer if integer or string
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, ...data, cOptions: updatedCOptions, wOptions: updatedWOptions }))
-        setFormView(formViews[1])
+        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, templateTypes, templateId, code, questionText, inputVariables, cOptions: cOPtionsArray, wOptions: wOPtionsArray }))
     }
 
     const extractInputs = (questionData) => {
@@ -291,15 +353,6 @@ export default function McqPoolBuilder(props) {
             return []
         }
     }
-
-    // const extractInputVariables = () => {
-    //     const regex = /{{\d*\w*}}/g
-
-    //     const inputsWithBrackets = questionData.match(regex)
-
-    //     const inputsWithoutBrackets = inputsWithBrackets ? inputsWithBrackets.map(string => string.replace('{{', '').replace('}}', '')) : []
-    //     return inputsWithoutBrackets
-    // }
 
     const getQuestionDataToExtractInputs = (templateType) => {
         const { questionText, code, cOptions, wOptions, inputVariables } = questionsData;
@@ -339,101 +392,206 @@ export default function McqPoolBuilder(props) {
     }
 
     useEffect(() => {
-        if (questionsData.templateTypes) {
+        if (questionsData?.templateTypes?.length && templateJson.length === 0) {
             setInputs(getInputsBasedOnTemplateType())
         }
-    }, [formView]);
-
-
-    const changeEditor = (value) => {
-        let code = value
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, code }))
-    }
+    }, [JSON.stringify(questionsData)]);
 
     const includesRequiredTemplateType = (templateType) => {
-        if (questionsData.templateTypes) {
-            const templates = questionsData?.templateTypes?.map(eachTemplateObj => eachTemplateObj.value)
+        if (templateTypes) {
+            const templates = templateTypes?.map(eachTemplateObj => eachTemplateObj.value)
             return templates.includes(templateType.value)
         }
         return false
-    }
-
-    const onChangeInputVariablesTextarea = (event) => {
-        const { value } = event.target
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, inputVariables: value }))
-    }
-
-    const onChangeQuestionText = (event) => {
-        const { value } = event.target
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, questionText: value }))
     }
 
     const isFormViewInputs = () => {
         return formView === formViews[1]
     }
 
-    const renderQuestionForm = () => {
+    // const renderQuestionForm = () => {
 
-        return (<FormContainer
-            onSuccess={onProceed}
-        >
-            <Select
-                onChange={onChangeTemplateTypes}
-                options={templateTypesArray}
-                placeholder="Type of Template"
-                isMulti={true}
-                isDisabled={isFormViewInputs()}
-                className="react-select"
-            />
+    //     return (<FormContainer
+    //         onSuccess={onProceed}
+    //     >
+    //         <Select
+    //             onChange={onChangeTemplateTypes}
+    //             options={templateTypesArray}
+    //             placeholder="Type of Template"
+    //             isMulti={true}
+    //             isDisabled={isFormViewInputs()}
+    //             className="react-select"
+    //         />
 
-            <br />
+    //         <br />
 
-            <Select
-                onChange={onChangeTemplateId}
-                options={templateIdsArray}
-                placeholder="Template Id"
-                isMulti={false}
-                isDisabled={isFormViewInputs()}
-                className="react-select"
-            />
-            {/* <MultiSelectElement menuItems={templateTypesArray} label="Type of Template" name="templateTypes" required /> */}
-            <br />
-            {typeof document !== "undefined" ? <CodeEditor changeEditor={changeEditor} readOnly={isFormViewInputs()} /> : <Fallback />}
-            {/* <br />
-            <Editor
-                height="100px"
-                defaultLanguage="python"
-                onChange={onChangeEditor}
-            /> */}
-            {/* {includesRequiredTemplateType(templateTypesArray[4]) === true ? <TextFieldElement name="inputVariables" label="Input Variables" required className="question-text-field" /> : null} */}
-            {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Code Input Templates" onChange={onChangeInputVariablesTextarea} required disabled={isFormViewInputs()}></textarea></div> : null}
-            <br />
-            <div className="question-text-field">
-                <textarea className="text-area" name="inputVariables" placeholder="Question Text" onChange={onChangeQuestionText} required disabled={isFormViewInputs()}></textarea>
-            </div>
-            <br />
-            {/* <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
-            <br /> */}
-            {/* <TextFieldElement name="generateCount" label="No.of Variants to generate" required disabled={isFormViewInputs()} />
-            <br /> */}
-            <TextFieldElement name="cOptions" label="Correct Options" disabled={isFormViewInputs()} />
-            <br />
-            <TextFieldElement name="wOptions" label="Wrong Options" disabled={isFormViewInputs()} />
-            <br />
-            <button type="submit" hidden id="proceedBtn">Proceed</button>
-        </FormContainer>)
+    //         <Select
+    //             onChange={onChangeTemplateId}
+    //             options={templateIdsArray}
+    //             placeholder="Template Id"
+    //             isMulti={false}
+    //             isDisabled={isFormViewInputs()}
+    //             className="react-select"
+    //         />
+    //         {/* <MultiSelectElement menuItems={templateTypesArray} label="Type of Template" name="templateTypes" required /> */}
+    //         <br />
+    //         {typeof document !== "undefined" ? <CodeEditor changeEditor={changeEditor} readOnly={isFormViewInputs()} /> : <Fallback />}
+    //         {/* <br />
+    //         <Editor
+    //             height="100px"
+    //             defaultLanguage="python"
+    //             onChange={onChangeEditor}
+    //         /> */}
+    //         {/* {includesRequiredTemplateType(templateTypesArray[4]) === true ? <TextFieldElement name="inputVariables" label="Input Variables" required className="question-text-field" /> : null} */}
+    //         {includesRequiredTemplateType(templateTypesArray[4]) === true ? <div className="question-text-field"><textarea className="text-area" name="inputVariables" placeholder="Code Input Templates" onChange={onChangeInputVariablesTextarea} required disabled={isFormViewInputs()}></textarea></div> : null}
+    //         <br />
+    //         <div className="question-text-field">
+    //             <textarea className="text-area" name="inputVariables" placeholder="Question Text" onChange={onChangeQuestionText} required disabled={isFormViewInputs()}></textarea>
+    //         </div>
+    //         <br />
+    //         {/* <TextFieldElement name="questionText" label="Question Text" required className="question-text-field" />
+    //         <br /> */}
+    //         {/* <TextFieldElement name="generateCount" label="No.of Variants to generate" required disabled={isFormViewInputs()} />
+    //         <br /> */}
+    //         <TextFieldElement name="cOptions" label="Correct Options" disabled={isFormViewInputs()} />
+    //         <br />
+    //         <TextFieldElement name="wOptions" label="Wrong Options" disabled={isFormViewInputs()} />
+    //         <br />
+    //         <button type="submit" hidden id="proceedBtn">Proceed</button>
+    //     </FormContainer>)
+    // }
+
+    const onChangeWOptions = (event) => {
+        const { value } = event.target
+        setWOptions(value)
+
     }
 
+    const onChangeCOptions = (event) => {
+        const { value } = event.target
+        setCOptions(value)
 
-    // const renderFormView = () => {
-    //     switch (formView) {
-    //         case formViews[0]:
-    //             return renderQuestionForm()
-    //         case formViews[1]:
-    //             return renderInputsForm()
-    //     }
+    }
 
-    // }
+    const onChangeInputVariablesTextarea = (event) => {
+        const { value } = event.target
+        setInputVariables(value)
+    }
+
+    const onChangeQuestionText = (event) => {
+        const { value } = event.target
+        setQuestionText(value)
+    }
+
+    const changeEditor = (value) => {
+        setCode(value)
+    }
+
+    const updateQuestionFormValues = (question) => {
+        const { templateTypes, templateId, questionText, inputVariables, code, cOptions, wOptions } = question
+
+        const updatedTemplateTypes = templateTypesArray.filter(eachTemplateType => templateTypes.includes(eachTemplateType.value))
+        const updatedTemplateId = templateIdsArray.find(eachTemplateIdObj => eachTemplateIdObj.value === templateId)
+
+        setTemplateTypes(updatedTemplateTypes)
+        setQuestionText(questionText)
+        setTemplateId(updatedTemplateId)
+        setInputVariables(inputVariables)
+        setCode(code)
+        setCOptions(cOptions.join(", "))
+        setWOptions(wOptions.join(","))
+    }
+
+    const updateQuestionData = (question) => {
+        const { templateTypes, questionText, templateId, inputVariables, code, cOptions, wOptions } = question
+
+        const updatedTemplateTypes = templateTypesArray.filter(eachTemplateType => templateTypes.includes(eachTemplateType.value))
+        const updatedTemplateId = templateIdsArray.find(eachTemplateIdObj => eachTemplateIdObj.value === templateId)
+
+        setQuestionsData({ templateTypes: updatedTemplateTypes, templateId: updatedTemplateId, questionText, inputVariables, code, cOptions, wOptions })
+    }
+
+    const onChangeTemplateId = (selectedOptions) => {
+        if (Object.keys(prodJson).length) {
+            const templateJson = convertProdToTemplatesJson(prodJson)
+            const template = templateJson.find(eachTemplateObj => eachTemplateObj.templateId === selectedOptions.value)
+            updateQuestionFormValues(template)
+            updateQuestionData(template)
+        }
+        if (templateJson.length) {
+            const template = templateJson.find(eachTemplateObj => eachTemplateObj.templateId === selectedOptions.value)
+            updateQuestionFormValues(template)
+            updateQuestionData(template)
+            setInputs(template.inputs)
+        }
+
+        console.log(selectedOptions, 'selected')
+        setTemplateId(selectedOptions)
+    }
+
+    const onChangeTemplateTypes = (selectedOptions) => {
+        setTemplateTypes(selectedOptions)
+    }
+
+    console.log(inputs, 'inputs')
+
+    const renderQuestionForm = () => {
+
+        return (
+            <form className="flex-container">
+                <div className="form flex-grow">
+                    <Select
+                        isClearable
+                        placeholder="Type of Template"
+                        isMulti={true}
+                        value={templateTypes}
+                        onChange={onChangeTemplateTypes}
+                        className="react-select"
+                        options={templateTypesArray}
+                    />
+
+                    <br />
+
+                    <Select
+                        isClearable
+                        placeholder="Template Id"
+                        isMulti={false}
+                        value={templateId}
+                        onChange={onChangeTemplateId}
+                        className="react-select"
+                        options={templateIdsArray}
+                    />
+
+                    <br />
+
+                    {typeof document !== "undefined" ? <CodeEditor
+                        changeEditor={changeEditor} readOnly={isFormViewInputs()} code={code} /> : <Fallback />}
+
+                    <br />
+
+                    <div className="question-text-field">
+                        <textarea className="text-area" placeholder="Question Text" value={questionText} onChange={onChangeQuestionText} required></textarea>
+                    </div>
+
+                    {includesRequiredTemplateType(templateTypesArray[4]) === true ? <><br /> <div><input className="question-form-input-field" placeholder="Code Input Templates" value={inputVariables} onChange={onChangeInputVariablesTextarea} /></div></> : null}
+
+                    <br />
+
+                    <div><input className="question-form-input-field" placeholder="Correct Options" value={cOptions} onChange={onChangeCOptions} /></div>
+                    <br />
+                    <div><input className="question-form-input-field" placeholder="Wrong Options" value={wOptions} onChange={onChangeWOptions} /></div>
+
+                </div>
+
+                <div className="m-auto">
+                    <button type="button" className="icon-container" onClick={onProceed}>
+                        <IoPlayForward size={30} />
+                    </button>
+                </div>
+
+            </form>)
+    }
+
 
     const renderPreviewFieldBasedOnQuestionData = (key, keyValue) => {
         switch (key) {
@@ -490,40 +648,40 @@ export default function McqPoolBuilder(props) {
     }
 
     const renderFloatRange = (input) => {
-        const { inputName } = input
+        const { inputName, min, max, decimals } = input
 
         return (
             <>
-                <input className="input-field expand" name={`${inputName}FloatMin`} placeholder="Min" onChange={onChangeMin} />
-                <input className="input-field expand" name={`${inputName}FloatMax`} placeholder="Max" onChange={onChangeMax} />
-                <input className="input-field expand" name={`${inputName}decimals`} placeholder="Decimals" onChange={onChangeDecimals} />
+                <input className="input-field expand" name={`${inputName}FloatMin`} placeholder="Min" onChange={onChangeMin} value={min} />
+                <input className="input-field expand" name={`${inputName}FloatMax`} placeholder="Max" onChange={onChangeMax} value={max} />
+                <input className="input-field expand" name={`${inputName}decimals`} placeholder="Decimals" onChange={onChangeDecimals} value={decimals} />
             </>
         )
     }
 
     const renderIntegerRange = (input) => {
-        const { inputName } = input
+        const { inputName, min, max } = input
 
         return (
             <>
-                <input className="input-field expand" name={`${inputName}Min`} placeholder="Min" onChange={onChangeMin} />
-                <input className="input-field expand" name={`${inputName}Max`} placeholder="Max" onChange={onChangeMax} />
+                <input className="input-field expand" name={`${inputName}Min`} placeholder="Min" onChange={onChangeMin} value={min} />
+                <input className="input-field expand" name={`${inputName}Max`} placeholder="Max" onChange={onChangeMax} value={max} />
             </>
         )
     }
 
-    const deleteOtherInputTypeKeys = (inputObj) => {
-        const { inputType } = inputObj
+    // const deleteOtherInputTypeKeys = (inputObj) => {
+    //     const { inputType } = inputObj
 
-        const inputTypeDetailsKeys = Object.keys(inputTypeDetails)
+    //     const inputTypeDetailsKeys = Object.keys(inputTypeDetails)
 
-        inputTypeDetailsKeys.map(eachInputType => {
-            if (eachInputType !== inputType) {
-                inputTypeDetails[eachInputType].forEach(eachKey => delete inputObj[eachKey])
-            }
-        })
+    //     inputTypeDetailsKeys.map(eachInputType => {
+    //         if (eachInputType !== inputType) {
+    //             inputTypeDetails[eachInputType].forEach(eachKey => delete inputObj[eachKey])
+    //         }
+    //     })
 
-    }
+    // }
 
     const onChangeMin = (event) => {
         const { value, name } = event.target
@@ -581,17 +739,6 @@ export default function McqPoolBuilder(props) {
         setInputs(updatedInputs)
     }
 
-    const onChangeTemplateTypes = (selectedOptions) => {
-        const templateTypes = selectedOptions
-
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, templateTypes }))
-    }
-
-    const onChangeTemplateId = (selectedOptions) => {
-        const templateId = selectedOptions
-
-        setQuestionsData(prevQuestionData => ({ ...prevQuestionData, templateId }))
-    }
 
     const onChangeContextType = (selectedOption, event) => {
 
@@ -610,21 +757,21 @@ export default function McqPoolBuilder(props) {
     }
 
     const renderStringRange = (input) => {
-        const { inputName } = input
+        const { inputName, contextType, length } = input
 
         return (
             <>
-                <Select options={contextTypes} onChange={onChangeContextType} name={`${inputName}ContextType`} className="react-select-container expand" />
-                <input className="input-field length-input-field" name={`${inputName}Length`} placeholder="Length" onChange={onChangeLength} />
+                <Select options={contextTypes} onChange={onChangeContextType} name={`${inputName}ContextType`} className="react-select-container expand" value={contextType} />
+                <input className="input-field length-input-field" name={`${inputName}Length`} value={length} placeholder="Length" onChange={onChangeLength} />
             </>
         )
     }
 
     const renderCustomRange = (input) => {
-        const { inputName } = input
+        const { inputName, customList } = input
 
         return (
-            <input className="input-field expand" name={`${inputName}Custom`} placeholder="Custom List" onChange={onChangeCustomList} />
+            <input className="input-field expand" name={`${inputName}Custom`} value={customList} placeholder="Custom List" onChange={onChangeCustomList} />
         )
     }
 
@@ -909,15 +1056,18 @@ list(output)`
 
     const renderTemplateJson = () => {
 
+        const templateJson = { ...questionsData, genCount, inputs }
+
         return (
             <>
-                <CopyToClipboard text={JSON.stringify(getGeneratedQuestionsData())}
+                {/* <CopyToClipboard text={JSON.stringify(getGeneratedQuestionsData())} */}
+                <CopyToClipboard text={JSON.stringify(templateJson)}
                     onCopy={onCopyTemplatesJsonCode}>
                     <div className="copy-to-clipboard-container">
                         {isTemplatesJsonCopied ? <div className="copied-container"> <TiTick size="20px" /><span>Copied</span></div> : <button className="copy-btn">Copy to clipboard</button>}
                     </div>
                 </CopyToClipboard>
-                <ReactJson src={getGeneratedQuestionsData()} theme="monokai" style={{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
+                <ReactJson src={templateJson} theme="monokai" style={{ whiteSpace: 'pre', "height": "400px", "overflow": "scroll" }} enableClipboard={false} />
             </>)
     }
 
@@ -1001,9 +1151,9 @@ list(output)`
         setActiveTab(id)
     }
 
-    // const onResetData = () => {
-    //     initializeStates()
-    // }
+    const onResetData = () => {
+        initializeStates()
+    }
 
     const renderJson = () => {
         switch (activeTab) {
@@ -1014,6 +1164,64 @@ list(output)`
             case tabsList[2]:
                 return renderTemplateJson()
         }
+    }
+
+    const getJSONFileContent = async (file) => {
+        return new Promise(resolve => {
+            const blob = new Blob([file], { type: "application/json" });
+
+            fileReader.addEventListener('load', ((jsonFile) => {
+                return function (event) {
+                    resolve(JSON.parse(event.target.result))
+                };
+
+            })(blob));
+
+            fileReader.readAsText(blob);
+        });
+    }
+
+    const getTemplateIdsArrayFromTemplateJson = (templateJson) => {
+        const templateIds = templateJson.map(eachTemplateObj => {
+            const templateId = eachTemplateObj.templateId
+            return { value: templateId, label: templateId }
+        })
+        return templateIds
+    }
+
+    useEffect(() => {
+        if (Object.keys(prodJson).length) {
+            const templateJson = convertProdToTemplatesJson(prodJson)
+            const templateIds = getTemplateIdsArrayFromTemplateJson(templateJson)
+
+            console.log(templateIds, 'templateIds')
+
+            setTemplateIdsArray(templateIds)
+        }
+
+    }, [JSON.stringify(prodJson)])
+
+    useEffect(() => {
+        if (templateJson.length) {
+            const templateIds = getTemplateIdsArrayFromTemplateJson(templateJson)
+
+            setTemplateIdsArray(templateIds)
+        }
+    }, [JSON.stringify(templateJson)])
+
+    const onChangeProdJsonFile = async (event) => {
+        const { files } = event.target
+        const file = files[0]
+        let jsonContent = await getJSONFileContent(file)
+        setProdJson(jsonContent)
+    }
+
+    const onChangeTemplateJsonFile = async (event) => {
+        const { files } = event.target
+        const file = files[0]
+
+        let jsonContent = await getJSONFileContent(file)
+        setTemplateJson(jsonContent)
     }
 
     const renderJSONTabs = () => {
@@ -1041,21 +1249,29 @@ list(output)`
         <>
             <p className="app-sub-heading">MCQ Pool Builder</p>
             <ResponsiveContainer>
+                <form encType="multipart/form-data">
+                    <div>
+                        <label>Upload Prod JSON</label>
+                        <input id="prodUpload" type="file" name="prodJson" size="30" onChange={onChangeProdJsonFile} />
+                    </div>
+                    <div>
+                        <label>Upload Templates JSON</label>
+                        <input id="templateUpload" type="file" name="templateJson" size="30" onChange={onChangeTemplateJsonFile} />
+                    </div>
+                </form>
                 <div className="form-containers">
-                    <div className="form-container">
+                    <div className="form-major-container">
                         {renderQuestionForm()}
                     </div>
-                    <button className="icon-container" onClick={onClickPlayIcon} disabled={!isQuestionDataValid()}>
-                        <IoPlayForward size={30} />
-                    </button>
                     <div className="form-container">
                         {renderInputsForm()}
                     </div>
                 </div>
                 <div>
-                    {/* <button onClick={onResetData}>Reset</button> */}
+                    <button onClick={onResetData}>Reset</button>
+                    {/* disabled={inputs.length > 0} */}
                     {/* <button onClick={onGenerateData} disabled={inputs.length > 0 ? false : true}>Generate Data</button> */}
-                    <button onClick={onGenerateData} disabled={!(isFormViewInputs() && inputs.length > 0)}>Generate Data</button>
+                    <button onClick={onGenerateData}>Generate Data</button>
                 </div>
                 {/* <div className="separator"></div> */}
                 {/* <div className="tabs-container">
@@ -1089,3 +1305,5 @@ list(output)`
         </>
     );
 }
+
+

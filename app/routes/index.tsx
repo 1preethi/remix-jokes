@@ -12,6 +12,9 @@ export default function Index() {
                         <li>
                             <Link to="mcq-builder">MCQ Builder</Link>
                         </li>
+                        <li>
+                            <Link to="mcq-review/sheets">MCQ Review</Link>
+                        </li>
                     </ul>
                 </nav>
             </div>
