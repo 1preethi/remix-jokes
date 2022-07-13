@@ -22,8 +22,10 @@ authenticator.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       scope: ["openid email profile"],
-      callbackURL: `http://localhost:3000/auth/${SocialsProvider.GOOGLE}/callback`,
+      callbackURL: `http://mcq-builder-git-mcq-pool-editor-builder-1preethi.vercel.app/auth/${SocialsProvider.GOOGLE}/callback`,
     },
     handleSocialAuthCallback
   )
 );
+
+//callbackURL: `http://localhost:3000/auth/${SocialsProvider.GOOGLE}/callback`,
