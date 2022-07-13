@@ -1,7 +1,7 @@
+import "dotenv/config";
 import { Authenticator } from "remix-auth";
 import { storage } from "~/utils/session.server";
 import { GoogleStrategy, SocialsProvider } from "remix-auth-socials";
-import "dotenv/config";
 
 // Create an instance of the authenticator
 // It will take session storage as an input parameter and creates the user session on successful authentication
