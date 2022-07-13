@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "@remix-run/react";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { json } from "@remix-run/node";
