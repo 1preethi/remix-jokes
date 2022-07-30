@@ -27,5 +27,3 @@ authenticator.use(
     handleSocialAuthCallback
   )
 );
-
-//callbackURL: `http://localhost:3000/auth/${SocialsProvider.GOOGLE}/callback`,

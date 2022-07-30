@@ -1,0 +1,27 @@
+ul {
+  padding: 0;
+}
+
+.tab-item {
+  list-style-type: none;
+  margin-right: 60px;
+}
+
+.tab-button {
+  color: #dfe2e5;
+  font-family: "Roboto";
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  padding: 2px;
+  padding-top: 0;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+.active {
+  color: white;
+  border-bottom: 2px solid white;
+}

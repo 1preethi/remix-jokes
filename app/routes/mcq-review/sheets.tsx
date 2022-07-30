@@ -1,5 +1,5 @@
 import { ActionFunction, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
-import { Form, Link, Outlet, useActionData, useLoaderData, useLocation } from "@remix-run/react";
+import { Form, Link, NavLink, Outlet, useActionData, useLoaderData, useLocation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import Comments from "~/components/comments";
 import McqPreviewer from "~/components/mcqPreviewer";
@@ -147,6 +147,7 @@ export default function Sheets() {
 
     return (
         <>
+            <p className="text-lg font-bold">Sheets:</p>
             {sheets.map(eachSheet => <Link to={`/mcq-review/sheets/${eachSheet.sheetId}/subsheets`}>{eachSheet.sheetName}</Link>)}
             <Outlet />
             {/* <ResponsiveContainer>

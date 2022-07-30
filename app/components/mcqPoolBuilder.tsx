@@ -926,6 +926,7 @@ list(output)`
 
             inputs.forEach(eachInputObj => {
                 inputObject[eachInputObj.inputName] = getChanceRandomValueBasedOnInputType(eachInputObj)
+                console.log(eachInputObj, inputObject[eachInputObj.inputName], 'chance')
             })
             return inputObject
         }
@@ -1013,7 +1014,7 @@ list(output)`
                 {inputs?.map(eachInput => renderInputRow(eachInput))}
                 {inputs.length > 0 ? <div className="generate-count-field">
                     <label>Generate Count: </label>
-                    <input type="text" placeholder="Generate Count" className="input-field" value={genCount} onChange={onChangeGenCount} />
+                    <input type="number" placeholder="Generate Count" className="input-field" value={genCount} onChange={onChangeGenCount} />
                 </div> : null}
 
                 {/* <div>

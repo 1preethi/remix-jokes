@@ -1,4 +1,10 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.options-table th,
+tr,
+td {
+  border: 1px solid !important;
+  border-collapse: collapse;
+}

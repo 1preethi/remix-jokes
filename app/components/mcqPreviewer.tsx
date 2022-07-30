@@ -13,7 +13,7 @@ const inputTypes = [
 ] //TODO: Move to constants - common
 
 export default function McqPreviewer(props) {
-    const { templateJson, contentJson, updateQuestionKey, sheetId, subsheetId } = props
+    const { templateJson, contentJson, updateQuestionKey, sheetId, subsheetId, reportedTo } = props
 
     const getJsonTypeToRender = () => {
         if (templateJson && templateJson.length > 0) {
@@ -48,7 +48,7 @@ export default function McqPreviewer(props) {
         return (
             <ul>
                 {/* {keys.map(eachKey => <li key={eachKey} id={eachKey} onClick={onClickQuestionKey}>{eachKey}</li>)} */}
-                {keys.map(eachKey => <><Link key={eachKey} to={`/mcq-review/sheets/${sheetId}/subsheets/${subsheetId}/questions/${eachKey}`}>{eachKey}</Link><br /></>)}
+                {keys.map(eachKey => <li><Link key={eachKey} to={`/mcq-review/sheets/${sheetId}/subsheets/${subsheetId}/questions/${eachKey}`}>{eachKey}</Link><br /></li>)}
             </ul>
         )
     }
@@ -59,24 +59,24 @@ export default function McqPreviewer(props) {
         switch (getJsonTypeToRender()) {
             case jsonTypes[0]:
                 return (
-                    <>
-                        <div>{renderQuestionKeys(getTemplateJsonKeys())}</div>
-                        <Outlet context={[templateJson, contentJson]} />
-                    </>
+                    <div className="flex flex-row">
+                        <div className="h-[65vh] overflow-y-auto">{renderQuestionKeys(getTemplateJsonKeys())}</div>
+                        <Outlet context={[templateJson, contentJson, reportedTo]} />
+                    </div>
                 )
             case jsonTypes[1]:
                 return (
-                    <>
-                        <div>{renderQuestionKeys(getContentJsonKeys())}</div>
-                        <Outlet context={[templateJson, contentJson]} />
-                    </>
+                    <div className="flex flex-row">
+                        <div className="h-[65vh] overflow-y-auto">{renderQuestionKeys(getContentJsonKeys())}</div>
+                        <Outlet context={[templateJson, contentJson, reportedTo]} />
+                    </div>
                 )
         }
     }
 
     return (
-        <div>
+        <>
             {renderQuestionsPreview()}
-        </div>
+        </>
     )
 }

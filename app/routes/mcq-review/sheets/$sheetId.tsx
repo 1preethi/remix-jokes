@@ -32,7 +32,7 @@ export default function SheetId() {
 
     const { sheetId, subsheets } = useLoaderData()
 
-    return (<div>
+    return (
         <Outlet />
-    </div>)
+    )
 }

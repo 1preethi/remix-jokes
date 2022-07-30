@@ -1,0 +1,84 @@
+---
+meta:
+  title: User Stories
+---
+
+## User Stories of MCQ Review:
+
+- As a reviewer, I want to login with the Google so that the system can authenticate me and I can trust it.
+
+  - Given that I am reviewer and not logged in, When I go to MCQ Review Page, then I should be redirected to login page
+  - Given that I am reviewer and not logged in, When I go to MCQ Review Page, then I should see the option to login with Google
+  - Given that I am reviewer and not logged in, When I click the Login with Google button, then I should see the gmail addresses and can also add another account to login
+  - Given that I am reviewer and not logged in, When I click the valid gmail address to sign in with Google, then I should go to sheets page
+  - Given that I am reviewer and not logged in, When I click the valid gmail address to sign in with Google, then I should see the list of review input sheets
+
+- As a reviewer, I want to see the list of review input sheets so that I can write the review inputs in particular sheet
+
+  - Given that I am reviewer and logged in, when I click one of the review input sheets, I should go to corresponding sheet subsheets page
+  - Given that I am reviewer and logged in, when I click one of the review input sheets, I should see the list of subsheets of a particular clicked sheet
+
+- As a reviewer, I want to see the list of subsheets of the selected review input sheet so that I can write the review inputs in particular sheet at particular subsheet
+
+  - Given that I am reviewer and logged in, when clicked one of the subsheets, I should see the form to fill the json or review details
+
+- As a reviewer, I want to upload the portal json so that I can review the questions and options in portal json
+- As a reviewer, I want to add the reported to person name so that the respective person can see their review inputs
+
+  - Given that I am reviewer and logged in, when filled the invalid json, review details and submitted, I should see the error message that "Please upload the valid json file"
+  - Given that I am reviewer and logged in, when filled both the portal json, template json and review details and submitted, I should see the error message that "Please upload only one file"
+  - Given that I am reviewer and logged in, when filled the json, review details and submitted, I should go to submitted json's page (with type of json in url - either template or portal)
+  - Given that I am reviewer and logged in, when filled the json, review details and submitted, I should see the list of question ids in uploaded json
+  - Given that I am reviewer and logged in, when filled the json, review details and submitted, I should see the number of unresolved comments beside question ids of uploaded json
+
+- As a reviewer, I want to see the list of question ids so that I can select the particular question to preview
+
+  - Given that I am reviewer and filled all the details to review, when clicked one of the question ids, I should go to particluar question page
+  - Given that I am reviewer and filled all the details to review, when clicked one of the question ids, I should see the question id higlighted
+  - Given that I am reviewer and filled all the details to review, when clicked one of the question ids, I should see the question id higlighted
+  - Given that I am reviewer and filled all the details to review, when clicked one of the question ids, I should see the details of a particular clicked question
+
+- As a reviewer, I want to see the question details of a question so that I can see question text, tag names, options (correct and wrong options)
+
+  - Given that I am reviewer, when clicked a question id, I should see the question key, id and tag names with comma separated
+  - Given that I am reviewer, when clicked a question id, I should see the question text in readable format (without HTML and markdown syntax)
+  - Given that I am reviewer, when clicked a question id, I should see the options (correct and wrong options) in readable format (without HTML and markdown syntax)
+  - Given that I am reviewer, when clicked a question id, I should see the options (correct and wrong options) in table
+  - Given that I am reviewer, when clicked a question id, I should see the explanation in readable format (without HTML and markdown syntax)
+  - Given that I am reviewer, when clicked a question id, I should see the list of comments of a particular question
+  - Given that I am reviewer, when clicked a question id and uploaded another json file, I should be redirected to uploaded jsons page //TODO: check
+
+- As a reviewer, I want to see the list of comments added to the question so that I can see the list of comments added
+
+  - Given that I am reviewer, when clicked the question id, I should see the two tabs for showing only question comments and All comments
+  - Given that I am reviewer, when clicked the question id, I should see the comments of a particular clicked question by default
+  - Given that I am reviewer, when clicked the question id, I should see the checkbox with "Show Unresolved only" for showing only unresolved comments (in All comments and question specific comments)
+  - Given that I am reviewer, when clicked the question id, I should see the each comment with Edit, Delete, Mark as resolved buttons
+
+- As a reviewer, I want to see the comments of all questions so that I can see the all comments consolidated without clicking on each question to view comments
+
+  - Given that I am reviewer, when clicked the question id and "All" Tab button, I should see the list of comments of all questions
+
+- As a reviewer, I want to see only unresolved comments of all questions so that I can see only the comments which the developers have to resolve
+
+  - Given that I am reviewer, when clicked the question id, "All" Tab button and checked the "Show Unresolved only", I should see the unresolved comments from all questions
+  - Given that I am reviewer, when clicked the question id, "All" Tab button and checked the "Show Unresolved only" and unchecked the "Show Unresolved only", I should see all the resolved and unresolved comments
+
+- As a reviewer, I want to add a comment to the question so that I can add comment if there is any mistake/ improvement in content
+
+  - Given that I am reviewer, when clicked the Add Comment button, I should see the error message that "Comment shouldn't be empty"
+  - Given that I am reviewer, when clicked the Add Comment button, I shouldn't see the empty comment in list of comments
+  - Given that I am reviewer, when filled the comment and clicked Add Comment button, I should see the new comment in the list of comments
+
+- As a reviewer, I want to edit the comment so that I can edit the comment if there is any change should be made to the comment
+
+  - Given that I am reviewer, when clicked the edit button, I should see the text area with the prefilled comment, save and cancel buttons
+  - Given that I am reviewer, when clicked the edit and updated the comment in text area and clicked Save button, I should see the updated comment
+  - Given that I am reviewer, when clicked the edit and cancel buttons, I should see the previous comment
+  - Given that I am reviewer, when clicked the edit and save/cancel buttons, I should see only the edit button, save and cancel buttons shouldn't be displayed
+
+- As a reviewer, I want to delete the comment so that I can delete the comment if the comment is not needed anymore
+
+  - Given that I am reviewer, when clicked the delete button, I shouldn't see the deleted comment in the list of comments
+
+- As a developer, I want to resolve the comment so that I can mark the comment as complete

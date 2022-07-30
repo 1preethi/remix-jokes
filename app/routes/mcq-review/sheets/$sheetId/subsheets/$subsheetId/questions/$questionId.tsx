@@ -1,11 +1,30 @@
 import { useOutletContext } from "@remix-run/react";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { json } from "@remix-run/node";
 import Comments from "~/components/comments";
 import { GoogleSpreadsheet } from '~/utils/spreadsheet.server';
 import Chance from 'chance';
+import parse from 'html-react-parser';
+import CodeEditor from "~/components/codeEditor.client";
+import { MarkdownContent } from "@ib/markdown-content";
 
+import githubMarkdownStyles from "github-markdown-css/github-markdown.css"
+import markdownStyles from "@ib/markdown-styles/MarkdownStyles.css"
+import commentStyles from "~/styles/comments.css"
+
+
+export function links() {
+    return [{ rel: "stylesheet", href: markdownStyles }, { rel: "stylesheet", href: commentStyles }, { rel: "stylesheet", href: githubMarkdownStyles }]
+}
+
+const contentTypes = {
+    "text": "TEXT",
+    "html": "HTML",
+    "markdown": "MARKDOWN"
+}
+
+const initialTabsList = [{ "id": "question", "name": "Question", "showUnresolved": false, "isActive": true }, { "id": "all", "name": "All", "showUnresolved": false, "isActive": false }]
 
 const jsonTypes = ["TEMPLATE", "CONTENT"]
 const inputTypes = [
@@ -15,6 +34,10 @@ const inputTypes = [
     "bool",
     "custom"
 ] //TODO: Move to constants - common
+
+const Fallback = () => {
+    return <div>Loading Code Editor...</div>;
+};
 
 export async function loader({ params }) {
 
@@ -53,7 +76,7 @@ class CommentObj {
         this.commentId = props.commentId;
         this.questionId = props.questionId;
         this.issue = props.issue;
-        this.reportedTo = props.reportedTo;
+        this.issueReportedTo = props.reportedTo;
         this.status = props.status;
     }
 }
@@ -128,15 +151,17 @@ export const action: ActionFunction = async ({
     }
 
 
-    if (action === "add") {
+    if (action.includes("add")) {
         const issue = formData.get("comment")
+        const reportedTo = formData.get("reportedTo")
+
         const commentId = chanceInstance.guid({ version: 4 })
-        const commentObj = createCommentTemplate(commentId, questionId, issue, "", "")
+        const commentObj = createCommentTemplate(commentId, questionId, issue, reportedTo, "")
 
         await sheet.addRow(commentObj);
     }
 
-    if (action === "edit") {
+    if (action.includes("edit")) {
         const issue = formData.get("comment")
         const commentId = formData.get("commentId")
 
@@ -150,7 +175,7 @@ export const action: ActionFunction = async ({
 
     }
 
-    if (action === "delete") {
+    if (action.includes("delete")) {
         const commentId = formData.get("commentId")
 
         const rowIndex = await getRowIndexByCommentId(commentId)
@@ -159,33 +184,43 @@ export const action: ActionFunction = async ({
 
     }
 
-    if (action === "resolve") {
+    if (action.includes("resolve")) {
+
         const commentId = formData.get("commentId")
 
-        await sheet.loadCells();
-
-        const rowIndex = getRowIndexByCommentId(commentId)
+        const rowIndex = await getRowIndexByCommentId(commentId)
         const columnIndex = 4
-
 
         let cell = sheet.getCell(rowIndex, columnIndex)
         cell.value = "done"
 
         await sheet.saveUpdatedCells();
-
-
     }
 
-    console.log(await getComments(), 'comments')
+    if (action.includes("unresolve")) {
+
+        const commentId = formData.get("commentId")
+
+        const rowIndex = await getRowIndexByCommentId(commentId)
+        const columnIndex = 4
+
+        let cell = sheet.getCell(rowIndex, columnIndex)
+        cell.value = ""
+
+        await sheet.saveUpdatedCells();
+    }
 
     return ({ newComments: await getComments() })
 
 }
 
 export default function QuestionId() {
-    const [templateJson, contentJson] = useOutletContext();
+    const [templateJson, contentJson, reportedTo] = useOutletContext();
     const loaderData = useLoaderData();
     const [chanceInstance, setChanceInstance] = useState()
+    const [tabsList, setTabsList] = useState(initialTabsList)
+    const [showComments, setShowComments] = useState(false)
+    // const [activeTab, setActiveTab] = useState(tabsList[0])
 
     useEffect(() => {
         const chance = new Chance()
@@ -272,7 +307,7 @@ export default function QuestionId() {
 
         return (
             <div>
-                <div><span>QuestionText:</span>{questionText}</div>
+                <div><span>QuestionText:</span><>{questionText}</></div>
                 <div><span>Template Id:</span>{templateId}</div>
                 <div><span>Code:</span> <div>{code}</div></div>
                 <div><span>Inputs:</span><div>{inputs.map(eachInput => renderInput(eachInput))}</div></div>
@@ -284,39 +319,80 @@ export default function QuestionId() {
         )
     }
 
+    const renderContentBasedOnContentType = (content, contentType = "text") => {
+        switch (contentType) {
+            case contentTypes.html:
+                return parse(content)
+            case contentTypes.markdown:
+                return <MarkdownContent content={content} />
+            default:
+                return content
+        }
+    }
+
     const renderCodeAnalysisQuestion = (activeQuestion) => {
-        const { question_key, question_text, tag_names, input_output, code_metadata } = activeQuestion
+        const { question_key, question_text, tag_names, input_output, code_metadata, explanation, content_type } = activeQuestion
+        const { output, wrong_answers } = input_output[0]
+
+        const outputElement = output.map(eachOutput => <>{renderContentBasedOnContentType(eachOutput)}<br /><hr /></>)
+        const wrongAnswersElement = wrong_answers.map(eachWrongAnswer => <>{renderContentBasedOnContentType(eachWrongAnswer)}<br /><hr /></>)
 
         return (
-            <div>
-                <div><span>Question Key:</span>{question_key}</div>
-                <div><span>Question Text:</span>{question_text}</div>
-                <div><span>Tag Names:</span>{tag_names.join(", ")}</div>
-                <div><span>Code:</span> {code_metadata.map(eachCode => <div>{eachCode.code_data}</div>)}</div>
-                {input_output.map(eachInput => {
-                    return (<>
-                        <div><span>Correct Options:</span> {eachInput.output.join(", ")}</div>
-                        <div><span>Wrong Options:</span> {eachInput.wrong_answers.join(", ")}</div>
-                    </>)
-                })}
+            <div className="grow">
+                <h3 className="tracking-wide">{question_key}</h3>
+                <h4>Tag Names: {tag_names.join(", ")} </h4>
+                <br />
+                <h4>
+                    {renderContentBasedOnContentType(question_text, content_type)}
+                </h4>
+                {code_metadata.map(eachCode =>
+                    typeof document !== "undefined" ? <CodeEditor
+                        readOnly={!eachCode.is_editable} code={eachCode.code_data} /> : <Fallback />
+                )}
+                <table className="options-table">
+                    <th className="flex justify-between">
+                        <td className="flex-1 font-extrabold p-15">Correct Output(s)</td>
+                        <td className="flex-1 font-extrabold p-15">Wrong Outputs(s)</td>
+                    </th>
+                    <tr className="flex">
+                        <td className="flex-1 p-2">{outputElement}</td>
+                        <td className="flex-1 p-2">{wrongAnswersElement}</td>
+                    </tr>
+                </table>
+                {explanation && <h4>Explanation: {renderContentBasedOnContentType(explanation.content, explanation.content_type)}</h4>}
             </div>)
 
     }
 
     const renderMultipleChoiceQuestion = (activeQuestion) => {
-        const { question_key, question, options } = activeQuestion
-        const { content, tag_names } = question
+        const { question_key, question, options, explanation } = activeQuestion
+        const { content, tag_names, content_type } = question
 
-        const correctOptions = options.filter(eachOption => eachOption.is_correct)
-        const wrongOptions = options.filter(eachOption => !eachOption.is_correct)
+        const correctOptions = options.filter(eachOption => eachOption.is_correct).map(eachOption => eachOption.content)
+        const wrongOptions = options.filter(eachOption => !eachOption.is_correct).map(eachOption => eachOption.content)
+
+        const correctOptionsElement = correctOptions.map(eachCorrectOption => <>{renderContentBasedOnContentType(eachCorrectOption)}<br /><hr /></>)
+        const wrongOptionsElement = wrongOptions.map(eachWrongOption => <>{renderContentBasedOnContentType(eachWrongOption)}<br /><hr /></>)
 
         return (
-            <div>
-                <div><span>Question Key:</span>{question_key}</div>
-                <div><span>Question Text:</span>{content}</div>
-                <div><span>Tag Names:</span>{tag_names.join(", ")}</div>
-                <div><span>Correct Options:</span> {correctOptions.join(", ")}</div>
-                <div><span>Wrong Options:</span> {wrongOptions.join(", ")}</div>
+            <div className="grow">
+                <h3 className="tracking-wide">{question_key}</h3>
+                <h4>Tag Names: {tag_names.join(", ")} </h4>
+                <br />
+                <h4>
+                    {renderContentBasedOnContentType(content, content_type)}
+                </h4>
+                <table className="options-table">
+                    <th className="flex justify-between">
+                        <td className="flex-1 font-extrabold p-15">Correct Output(s)</td>
+                        <td className="flex-1 font-extrabold p-15">Wrong Outputs(s)</td>
+                    </th>
+                    <tr className="flex">
+                        <td className="flex-1 p-2">{correctOptionsElement}</td>
+                        <td className="flex-1 p-2">{wrongOptionsElement}</td>
+                    </tr>
+                </table>
+                {explanation && <h4>Explanation: {renderContentBasedOnContentType(explanation.content, explanation.content_type)}</h4>}
             </div>)
     }
 
@@ -356,8 +432,98 @@ export default function QuestionId() {
         }
     }
 
+    const getActiveTabById = (id) => {
+        return tabsList.find(tab => tab.id === id)
+    }
+
+    const onClickTabItem = (event) => {
+        const { id } = event.target
+
+        const updatedTabsList = [...tabsList].map(eachTab => {
+            if (eachTab.id === id) {
+                return { ...eachTab, isActive: true }
+            }
+            return { ...eachTab, isActive: false }
+        })
+
+        setTabsList(updatedTabsList)
+    }
+
+    const onChangeShowUnresolvedCheckbox = (event) => {
+        const { checked } = event.target
+
+        const updatedTabsList = [...tabsList].map(eachTab => {
+            if (eachTab.id === getActiveTab().id) {
+                return { ...eachTab, showUnresolved: checked }
+            }
+            return { ...eachTab }
+        })
+
+        setTabsList(updatedTabsList)
+    }
+
+    const getActiveTab = () => {
+        return tabsList.find(eachTab => eachTab.isActive === true)
+    }
+
+    const getUnresolvedComments = (comments) => {
+        return comments.filter(eachComment => eachComment.status === undefined)
+    }
+
+    const getFilteredComments = () => {
+        const activeTab = getActiveTab()
+
+        if (activeTab.id === initialTabsList[0].id) {
+            const questionComments = getCommentsByQuestionId()
+            if (activeTab.showUnresolved) {
+                return getUnresolvedComments(questionComments)
+            }
+            else {
+                return questionComments
+            }
+        }
+        else {
+            if (activeTab.showUnresolved) {
+                return getUnresolvedComments(loaderData?.comments) //TODO: change to function to get comments from loader data
+            }
+            else {
+                return loaderData?.comments
+            }
+        }
+    }
+
+    const onClickShowComments = () => {
+        setShowComments(prevShowComments => !prevShowComments)
+    }
+
     //TODO: need to remove key
     //Issue: HTML is not rendering, Route is reloading multiple times
 
-    return <>{renderActiveQuestion()}<Comments key={chanceInstance ? chanceInstance.guid({ version: 4 }) : ""} comments={getCommentsByQuestionId()} /></>
+    return (<div className="flex grow items-start">
+        {renderActiveQuestion()}
+        <div>
+            <button className="bg-blue-300 p-2 rounded-md" onClick={onClickShowComments}>{showComments ? "Hide Comments" : "Show Comments"}</button>
+            {showComments && <div className="tabs-container h-[60vh] w-[300px] overflow-y-auto">
+                <ul className="flex items-end bg-black p-2">
+                    {tabsList.map(eachTab => (
+                        <li className="tab-item">
+                            <button
+                                id={eachTab.id}
+                                type="button"
+                                onClick={onClickTabItem}
+                                className={eachTab.isActive ? 'tab-button active' : 'tab-button'}
+                            >
+                                {eachTab.name}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+                <div>
+                    <input type="checkbox" checked={getActiveTab().showUnresolved} onChange={onChangeShowUnresolvedCheckbox} /><label>Show unresolved only</label>
+                </div>
+                <Comments key={chanceInstance ? chanceInstance.guid({ version: 4 }) : ""} reportedTo={reportedTo} comments={getFilteredComments()} />
+            </div>}
+        </div>
+
+    </div>)
 }

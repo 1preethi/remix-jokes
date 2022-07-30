@@ -55,7 +55,7 @@ export default function Questions() {
 
     const [contentJson, setContentJson] = useState([])
     const [templateJson, setTemplateJson] = useState([])
-    const [reportedTo, setReportedTo] = useState("preethi")
+    const [reportedTo, setReportedTo] = useState("")
     const [mcqReviewContent, setMcqReviewContent] = useState({})
 
     const createMcqReviewContentTemplate = (templateJson, contentJson, sheetId, subsheetName, reportedTo) => {
@@ -120,7 +120,7 @@ export default function Questions() {
 
     return (
         <>
-            <p className="app-sub-heading">MCQ Review</p>
+            <p className="text-lg font-bold">MCQ Review</p>
             <ResponsiveContainer>
                 <div>
                     <div>
@@ -135,7 +135,7 @@ export default function Questions() {
                     <button type="button" onClick={onSubmitReviewContent}>Submit</button>
                 </div>
                 <div>
-                    <McqPreviewer sheetId={sheetId} subsheetId={subsheetId} templateJson={mcqReviewContent?.templateJson} contentJson={mcqReviewContent?.contentJson} />
+                    <McqPreviewer sheetId={sheetId} subsheetId={subsheetId} reportedTo={reportedTo} templateJson={mcqReviewContent?.templateJson} contentJson={mcqReviewContent?.contentJson} />
                 </div>
             </ResponsiveContainer>
             {/* <Form

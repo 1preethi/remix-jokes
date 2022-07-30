@@ -33,10 +33,12 @@ import {
 //   ];
 // };
 
-import styles from "./styles/app.css"
+import styles from "./tailwind.css"
+import appStyles from "./styles/app.css"
+
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }]
+  return [{ rel: "stylesheet", href: styles }, { rel: "stylesheet", href: appStyles }]
 }
 
 export const meta: MetaFunction = () => {
@@ -62,7 +64,7 @@ function Document({
   title?: string;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="font-[roboto]">
       <head>
         <Meta />
         {/* <script defer src="https://pyscript.net/alpha/pyscript.js"></script> */}

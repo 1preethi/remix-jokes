@@ -32,6 +32,7 @@ export default function Subsheets() {
     const { sheetId, subsheets } = useLoaderData()
 
     return <>
+        <p className="text-lg font-bold">Subsheets:</p>
         {subsheets.map(eachSubsheet => <> <Link to={`/mcq-review/sheets/${sheetId}/subsheets/${eachSubsheet.sheetId}`}>{eachSubsheet.title}</Link><br /></>)}
         <Outlet />
     </>

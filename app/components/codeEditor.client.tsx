@@ -12,7 +12,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 
 
 const CodeEditor = (props) => {
-    const { changeEditor, code } = props
+    const { code } = props
 
     return (
         <div>
@@ -23,8 +23,9 @@ const CodeEditor = (props) => {
                 height="200px"
                 mode="python"
                 theme="monokai"
-                onChange={changeEditor}
+                onChange={props?.changeEditor}
                 name="codeEditor"
+                readOnly={props?.readOnly}
                 editorProps={{ $blockScrolling: true }}
                 setOptions={{ useWorker: true }} />
         </div>)

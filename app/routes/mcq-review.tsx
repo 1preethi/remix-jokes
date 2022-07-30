@@ -77,7 +77,7 @@ export default function McqReviewPlayground() {
     const [templateJson, setTemplateJson] = useState([])
     const [sheetId, setSheetId] = useState("1WpZhSD9_bXm1whI6ooc23wAqYumEaGiS7WwwDzlScZ8");
     const [subsheetName, setSubsheetName] = useState("Patterns")
-    const [reportedTo, setReportedTo] = useState("preethi")
+    const [reportedTo, setReportedTo] = useState("")
     const [mcqReviewContent, setMcqReviewContent] = useState({})
 
     const createMcqReviewContentTemplate = (templateJson, contentJson, sheetId, subsheetName, reportedTo) => {
