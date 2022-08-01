@@ -1,12 +1,46 @@
-content-utils-p:build: cache hit, replaying output [2m2f53f9f5047f7565[0m
-[32mcontent-utils-p:build: [0m
-[32mcontent-utils-p:build: [0m> content-utils-p@0.0.1 build
-[32mcontent-utils-p:build: [0m> remix build
-[32mcontent-utils-p:build: [0m
-[32mcontent-utils-p:build: [0mBuilding Remix app in production mode...
-[32mcontent-utils-p:build: [0mBuilt in 1.1s
-[32mcontent-utils-p:build: [0mnpm notice 
-[32mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.12.2
-[32mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.12.2>
-[32mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.12.2` to update!
-[32mcontent-utils-p:build: [0mnpm notice 
+content-utils-p:build: cache hit, replaying output [2ma09c264a3ef1a20b[0m
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m> content-utils-p@0.0.1 build
+[35mcontent-utils-p:build: [0m> run-s "build:*"
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m> content-utils-p@0.0.1 build:css
+[35mcontent-utils-p:build: [0m> npm run generate:css -- --minify
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m> content-utils-p@0.0.1 generate:css
+[35mcontent-utils-p:build: [0m> npx tailwindcss -o ./app/tailwind.css "--minify"
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0mDone in 242ms.
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.15.1
+[35mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.15.1>
+[35mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.15.1` to update!
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.15.1
+[35mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.15.1>
+[35mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.15.1` to update!
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.15.1
+[35mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.15.1>
+[35mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.15.1` to update!
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0m> content-utils-p@0.0.1 build:remix
+[35mcontent-utils-p:build: [0m> remix build
+[35mcontent-utils-p:build: [0m
+[35mcontent-utils-p:build: [0mBuilding Remix app in production mode...
+[35mcontent-utils-p:build: [0mBuilt in 1.6s
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.15.1
+[35mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.15.1>
+[35mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.15.1` to update!
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice 
+[35mcontent-utils-p:build: [0mnpm notice New minor version of npm available! 8.11.0 -> 8.15.1
+[35mcontent-utils-p:build: [0mnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v8.15.1>
+[35mcontent-utils-p:build: [0mnpm notice Run `npm install -g npm@8.15.1` to update!
+[35mcontent-utils-p:build: [0mnpm notice 

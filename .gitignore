@@ -9,3 +9,6 @@ node_modules
 .vercel
 
 /app/tailwind.css
+
+# Local Netlify folder
+.netlify

@@ -14,7 +14,10 @@
     "dev:remix": "remix dev",
     "generate:css": "npx tailwindcss -o ./app/tailwind.css",
     "start": "remix-serve build",
-    "postinstall": "prisma generate || true"
+    "deploy": "netlify deploy",
+    "init": "netlify init",
+    "postinstall": "prisma generate || true",
+    "prepare": "cd ../../ && patch-package"
   },
   "dependencies": {
     "@emotion/react": "11.9.0",
@@ -42,6 +45,8 @@
     "google-spreadsheet": "3.3.0",
     "html-react-parser": "3.0.1",
     "jsoncrush": "1.1.6",
+    "patch-package": "6.4.7",
+    "postinstall-prepare": "2.0.0",
     "prismjs": "1.28.0",
     "pyodide": "0.20.0",
     "python-shell": "3.0.1",
@@ -75,6 +80,7 @@
     "@types/react-dom": "^17.0.17",
     "esbuild-register": "3.3.2",
     "eslint": "^8.15.0",
+    "netlify-cli": "10.13.0",
     "npm-run-all": "4.1.5",
     "prisma": "3.14.0",
     "tailwindcss": "3.1.4",
