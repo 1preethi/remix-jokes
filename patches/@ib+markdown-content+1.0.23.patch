@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ib/markdown-content/lib/MarkdownContent.js b/node_modules/@ib/markdown-content/lib/MarkdownContent.js
+index 8ea85be..469af9a 100644
+--- a/node_modules/@ib/markdown-content/lib/MarkdownContent.js
++++ b/node_modules/@ib/markdown-content/lib/MarkdownContent.js
+@@ -13,7 +13,7 @@ const React = require("react");
+ const markdown_to_jsx_1 = require("markdown-to-jsx");
+ const mobx_react_1 = require("mobx-react");
+ const mobx_1 = require("mobx");
+-require("github-markdown-css");
++// require("github-markdown-css");
+ const BoldText_1 = require("./BoldText");
+ const HyperLink_1 = require("./HyperLink");
+ const NormalText_1 = require("./NormalText");

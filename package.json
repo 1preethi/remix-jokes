@@ -16,7 +16,7 @@
     "start": "remix-serve build",
     "deploy": "netlify deploy",
     "init": "netlify init",
-    "postinstall": "prisma generate || true"
+    "postinstall": "patch-package && prisma generate || true"
   },
   "dependencies": {
     "@emotion/react": "11.9.0",
