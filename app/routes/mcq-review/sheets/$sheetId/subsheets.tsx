@@ -2,6 +2,7 @@ import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
 import { GoogleSpreadsheet } from '~/utils/spreadsheet.server';
 import { json } from "@remix-run/node"; // or "@remix-run/cloudflare"
+import { useState } from "react";
 
 export const loader = async ({ params }) => {
 
@@ -30,10 +31,26 @@ export const loader = async ({ params }) => {
 
 export default function Subsheets() {
     const { sheetId, subsheets } = useLoaderData()
+    const [searchInput, setSearchInput] = useState()
+
+    const onchangeSearchInput = (event) => {
+        setSearchInput(event.target.value)
+    }
+
+
+    const getFilteredSubsheets = () => {
+        if (searchInput) {
+            return subsheets.filter(eachSubsheet => eachSubsheet.title.includes(searchInput))
+        }
+        return subsheets
+    }
 
     return <>
         <p className="text-lg font-bold">Subsheets:</p>
-        {subsheets.map(eachSubsheet => <> <Link to={`/mcq-review/sheets/${sheetId}/subsheets/${eachSubsheet.sheetId}`}>{eachSubsheet.title}</Link><br /></>)}
+        <input type="search" onChange={onchangeSearchInput} className="border-2" placeholder="Search..." />
+        <div className="h-[200px] overflow-auto">
+            {getFilteredSubsheets().map(eachSubsheet => <> <Link to={`/mcq-review/sheets/${sheetId}/subsheets/${eachSubsheet.sheetId}`}>{eachSubsheet.title}</Link><br /></>)}
+        </div>
         <Outlet />
     </>
 }

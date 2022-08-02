@@ -146,9 +146,11 @@ export default function Sheets() {
     }
 
     return (
-        <>
-            <p className="text-lg font-bold">Sheets:</p>
-            {sheets.map(eachSheet => <Link to={`/mcq-review/sheets/${eachSheet.sheetId}/subsheets`}>{eachSheet.sheetName}</Link>)}
+        <div className="p-5">
+            <div>
+                <p className="text-lg font-bold">Sheets:</p>
+                {sheets.map(eachSheet => <><Link to={`/mcq-review/sheets/${eachSheet.sheetId}/subsheets`}>{eachSheet.sheetName}</Link><br /></>)}
+            </div>
             <Outlet />
             {/* <ResponsiveContainer>
                 <form encType="multipart/form-data" onSubmit={onSubmitReviewContent}>
@@ -173,7 +175,7 @@ export default function Sheets() {
                 >
                     <button>Login with Google</button>
                 </Form> */}
-        </>
+        </div>
 
     )
 
